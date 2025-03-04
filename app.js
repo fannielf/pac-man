@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let score = 0;
     const grid = document.querySelector('.grid');
 
-    
     const layout = [
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -36,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ]
     
-})
+
 
 const squares = [];
 
@@ -47,20 +46,10 @@ function createBoard() {
         squares.push(square);
 
         //add layout to the board
-        switch (layout[i]) {
-            case 0:
-                squares[i].classList.add('pac-dot');
-                break;
-            case 1:
-                squares[i].classList.add('wall');
-                break;
-            case 2:
-                squares[i].classList.add('ghost-lair');
-                break;
-            case 3:
-                squares[i].classList.add('power-pellet');
-                break;
-        }
+        if (layout[i] === 0) squares[i].classList.add('pac-dot');
+        if (layout[i] === 1) squares[i].classList.add('wall');
+        if (layout[i] === 2) squares[i].classList.add('ghost-lair');
+        if (layout[i] === 3) squares[i].classList.add('power-pellet');
     }
 }
 
@@ -76,7 +65,7 @@ function movePacman(e) {
             if (squares[pacmanCurrentIndex-1] === squares[363]) {
                 pacmanCurrentIndex = 391
             } else if (
-                pacmanCurrentIndex & width !== 0 &&
+                pacmanCurrentIndex % width !== 0 &&
                 !squares[pacmanCurrentIndex-1].classList.contains('wall') &&
                 !squares[pacmanCurrentIndex-1].classList.contains('ghost-lair')
             ) {
@@ -87,7 +76,7 @@ function movePacman(e) {
             if (squares[pacmanCurrentIndex+1] === squares[392]) {
                 pacmanCurrentIndex = 364
             } else if (
-                pacmanCurrentIndex & width < width -1 &&
+                pacmanCurrentIndex % width < width -1 &&
                 !squares[pacmanCurrentIndex+1].classList.contains('wall') &&
                 !squares[pacmanCurrentIndex+1].classList.contains('ghost-lair')
             ) {
@@ -114,10 +103,15 @@ function movePacman(e) {
             break;
     }
     squares[pacmanCurrentIndex].classList.add('pac-man');
+    pacDotEaten()
 }
 
 document.addEventListener('keyup', movePacman);
+// powerPelletEaten()
+// chechForGameOver()
+// checkForWin()
 
+// what happens when pac-man eats a pac-dot
 function pacDotEaten() {
     if (squares[pacmanCurrentIndex].classList.contains('pac-dot')) {
         score++;
@@ -125,3 +119,5 @@ function pacDotEaten() {
         squares[pacmanCurrentIndex].classList.remove('pac-dot');
     }
 }
+
+})
