@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scoreDisplay = document.getElementById('score');
     const width = 28;
     let score = 0;
+    let points = 100;
     const grid = document.querySelector('.grid');
 
     const layout = [
@@ -140,6 +141,7 @@ function powerPelletEaten() {
 
 function unScareGhosts() {
     ghosts.forEach(ghost => ghost.isScared = false);
+    points = 100;
 }
 
 // Create and move ghosts
@@ -194,7 +196,8 @@ function moveGhost(ghost) {
         if (ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
             squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
             ghost.currentIndex = ghost.startIndex;
-            score += 100;
+            points = points * 2;
+            score += points;
             scoreDisplay.innerHTML = score;
             squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
         }
