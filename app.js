@@ -131,7 +131,7 @@ function pacDotEaten() {
 function powerPelletEaten() {
     if (squares[pacmanCurrentIndex].classList.contains('power-pellet')) {
         score += 10;
-        scoreDisplay,innerHTML = score;
+        scoreDisplay.innerHTML = score;
         ghosts.forEach(ghost => ghost.isScared = true);
         setTimeout(unScareGhosts, 10000);
         squares[pacmanCurrentIndex].classList.remove('power-pellet');
