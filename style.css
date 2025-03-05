@@ -63,6 +63,7 @@
     animation: eat 0.4s infinite steps(2); 
     position: relative;
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
+    transition: transform 0.2s linear;
 }
 
 .scared-ghost {
