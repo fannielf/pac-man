@@ -48,21 +48,21 @@
 
 @keyframes eat {
     0%, 100% { 
-        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* Suu suletud */
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
     }
     50% { 
-        clip-path: polygon(50% 0%, 100% 50%, 50% 30%, 0% 50%); /* Suu avatud */
+        clip-path: polygon(50% 0%, 100% 50%, 50% 30%, 0% 50%); 
     }
 }
 
 .pac-man {
-    width: 100px;  /* Pac-Mani suurus */
-    height: 100px; /* Pac-Mani kõrgus */
-    background-color: rgb(239, 239, 17);  /* Kollane värv */
-    border-radius: 50%;  /* Ümmargune kuju */
-    animation: eat 0.4s infinite steps(2);  /* Animatsioon suu avamiseks */
+    width: 100px;  
+    height: 100px; 
+    background-color: rgb(239, 239, 17);  
+    border-radius: 50%;  
+    animation: eat 0.4s infinite steps(2); 
     position: relative;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);  /* Ümmargune kuju suu külge */
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
 }
 
 .scared-ghost {
@@ -70,7 +70,7 @@
     border-radius: 50%;
 }
 
-#pause-menu {
+#pause-menu, #end-menu {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -81,6 +81,20 @@
     border-radius: 10px;
     text-align: center;
     z-index: 1000;
+}
+
+#resume-button, #restart-button, #play-again-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #1a5d35;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#resume-button:hover, #restart-button:hover, #play-again-button:hover {
+    background-color: #45a049;
 }
 
 .hidden {

@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let points = 100;
     const grid = document.querySelector('.grid');
     const pauseMenu = document.getElementById('pause-menu');
+    const resumeButton = document.getElementById('resume-button');
+    const restartButton = document.getElementById('restart-button');
+    const endMenu = document.getElementById('end-menu');
+    const endMessage = document.getElementById('end-message');
+    const finalScore = document.getElementById('final-score');
+    const playAgainButton = document.getElementById('play-again-button');
     let isPaused = false;
 
     const layout = [
@@ -38,8 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ]
     
-
-
 const squares = [];
 
 function createBoard() {
@@ -69,6 +73,7 @@ let pacmanCurrentIndex = 490;
 squares[pacmanCurrentIndex].classList.add('pac-man');
 
 function movePacman(e) {
+    if (isPaused) return;
     squares[pacmanCurrentIndex].classList.remove('pac-man');
     switch (e.key) {
         case 'ArrowLeft' : 
@@ -126,7 +131,7 @@ const moveDelay = 150;
 
 
 function movePacmanSmoothly(timestamp) {
-    if (!isMoving) return; 
+    if (!isMoving || isPaused) return; 
 
     if (timestamp - lastMoveTime >= moveDelay) {
     movePacman({ key: currentDirection }); 
@@ -136,7 +141,7 @@ requestAnimationFrame(movePacmanSmoothly);
 }
 
 function startMoving(e) {
-    if (isMoving) return; 
+    if (isMoving || isPaused) return; 
 
     currentDirection = e.key; 
     isMoving = true;
@@ -148,8 +153,8 @@ function stopMoving() {
 }
 
 
-document.addEventListener('keydown', startMoving);
-document.addEventListener('keyup', stopMoving);
+// document.addEventListener('keydown', startMoving);
+// document.addEventListener('keyup', stopMoving);
 
 //pausing the game
 function togglePause() {
@@ -164,15 +169,53 @@ function togglePause() {
     }
 }
 
+function restartGame() {
+    // Reset game state
+    score = 0;
+    scoreDisplay.innerHTML = score;
+    isPaused = false;
+    pauseMenu.classList.add('hidden');
+    endMenu.classList.add('hidden');
+
+    squares.forEach(square => {
+        square.classList.remove('pac-man', 'ghost', 'scared-ghost');
+    });
+
+    createBoard();
+    
+    pacmanCurrentIndex = 490;
+    squares[pacmanCurrentIndex].classList.add('pac-man');
+
+    ghosts.forEach(ghost => {
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
+        ghost.currentIndex = ghost.startIndex;
+        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+    });
+
+    if (isMoving) {
+        requestAnimationFrame(movePacmanSmoothly);
+    }
+}
+
 document.addEventListener('keydown', function(e) {
     if (e.key === ' ') {
         togglePause();
+    } else if (e.key === 'r' && isPaused) {
+        restartGame();
     } else {
         startMoving(e);
     }
 });
 
 document.addEventListener('keyup', stopMoving);
+
+resumeButton.addEventListener('click', function() {
+    if (isPaused) {
+        togglePause();
+    }
+});
+restartButton.addEventListener('click', restartGame);
+playAgainButton.addEventListener('click', restartGame);
 
 // what happens when pac-man eats a pac-dot
 function pacDotEaten() {
@@ -189,7 +232,16 @@ function powerPelletEaten() {
         score += 10;
         scoreDisplay.innerHTML = score;
         ghosts.forEach(ghost => ghost.isScared = true);
-        setTimeout(unScareGhosts, 10000);
+        let scareDuration = 10000; //10 seconds
+        let startTime = performance.now();
+        function checkUnscare(time) {
+            if (time - startTime >= scareDuration) {
+                unScareGhosts();
+            } else {
+                requestAnimationFrame(checkUnscare);
+            }
+        }
+        requestAnimationFrame(checkUnscare);
         squares[pacmanCurrentIndex].classList.remove('power-pellet');
     }
 }
@@ -227,38 +279,53 @@ ghosts.forEach(ghost => moveGhost(ghost))
 
 function moveGhost(ghost) {
     const directions = [-1, 1, width, -width];
-    let direction = directions[Math.floor(Math.random() * directions.length)]
+    let direction = directions[Math.floor(Math.random() * directions.length)];
+    let lastMoveTime = 0;
 
-    ghost.timerID = setInterval(function() {
-        if (isPaused) return;
-        // can move if the next index is not a wall nor have another ghost in it
-        if (
-            direction &&
-            !squares[ghost.currentIndex + direction].classList.contains('ghost') &&
-            !squares[ghost.currentIndex + direction].classList.contains('wall')
-        )
-        {
-            squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
-            ghost.currentIndex += direction;
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-        } else {
-            direction = directions[Math.floor(Math.random() * directions.length)];
+    function move(timestamp) {
+        if (isPaused) {
+            requestAnimationFrame(move);
+            return;
+        }
+        // Check if enough time has passed to move the ghost based on speed
+        if (timestamp - lastMoveTime >= ghost.speed) {
+            lastMoveTime = timestamp;
+
+            // can move if the next index is not a wall nor have another ghost in it
+            if (
+                direction &&
+                !squares[ghost.currentIndex + direction].classList.contains('ghost') &&
+                !squares[ghost.currentIndex + direction].classList.contains('wall')
+            ) {
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
+                ghost.currentIndex += direction;
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+            } else {
+                direction = directions[Math.floor(Math.random() * directions.length)];
+            }
+
+            if (ghost.isScared) {
+                squares[ghost.currentIndex].classList.add('scared-ghost');
+            }
+
+            if (ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
+                ghost.currentIndex = ghost.startIndex;
+                points = points * 2;
+                score += points;
+                scoreDisplay.innerHTML = score;
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+            }
+
+            checkForGameOver();
         }
 
-        if (ghost.isScared) {
-            squares[ghost.currentIndex].classList.add('scared-ghost');
-        }
+        // Recursively call move function for the next frame
+        requestAnimationFrame(move);
+    }
 
-        if (ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
-            squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
-            ghost.currentIndex = ghost.startIndex;
-            points = points * 2;
-            score += points;
-            scoreDisplay.innerHTML = score;
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-        }
-        checkForGameOver();
-    }, ghost.speed)
+    // Start the recursive animation
+    requestAnimationFrame(move);
 }
 
 function checkForGameOver() {
@@ -269,22 +336,26 @@ function checkForGameOver() {
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
-        setTimeout(function() {
-            alert('Game Over')
-        }, 500)
+        squares.forEach(square => {
+            square.classList.remove('pac-man', 'ghost', 'scared-ghost');
+        });
+        endMessage.innerHTML = 'Game Over';
+        finalScore.innerHTML = score;
+        endMenu.classList.remove('hidden');
     }
 }
 
 function checkForWin() {
-    if (score >= 300) {
+    if (score >= 100) {
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
-        setTimeout(function() {
-            alert('You have WON!!')
-        }, 500)
+        squares.forEach(square => {
+            square.classList.remove('pac-man', 'ghost', 'scared-ghost');
+        });
+        endMessage.innerHTML = 'You have WON!!';
+        finalScore.innerHTML = score;
+        endMenu.classList.remove('hidden');
     }
 }
-
-
 })
