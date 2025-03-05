@@ -1,13 +1,47 @@
 import { squares, createBoard } from './gameBoard.js';
 
 document.addEventListener('DOMContentLoaded', function() {
+    
     const scoreDisplay = document.getElementById('score');
     const width = 28;
     let score = 0;
     let points = 100;
-
+    const grid = document.querySelector('.grid');
+    const pauseMenu = document.getElementById('pause-menu');
+    const resumeButton = document.getElementById('resume-button');
+    const restartButton = document.getElementById('restart-button');
+    const endMenu = document.getElementById('end-menu');
+    const endMessage = document.getElementById('end-message');
+    const finalScore = document.getElementById('final-score');
+    const playAgainButton = document.getElementById('play-again-button');
+    let isPaused = false;
 
 createBoard();
+
+//creating the event listeners
+document.addEventListener('keyup', stopMoving);
+document.addEventListener('keydown', function(e) {
+    if (e.key === ' ') {
+        e.preventDefault(); // Prevent default action
+        togglePause();
+    } else if (e.key === 'r' && isPaused) {
+        e.preventDefault(); // Prevent default action
+        restartGame();
+    } else if (e.key === 'Enter' && endMenu.classList.contains('hidden') === false) {
+        e.preventDefault(); // Prevent default action
+        restartGame();
+    } else {
+        startMoving(e);
+    }
+});
+
+resumeButton.addEventListener('click', function() {
+    if (isPaused) {
+        togglePause();
+    }
+});
+restartButton.addEventListener('click', restartGame);
+playAgainButton.addEventListener('click', restartGame);
 
 // Create and move Pac-man
 
@@ -15,6 +49,7 @@ let pacmanCurrentIndex = 490;
 squares[pacmanCurrentIndex].classList.add('pac-man');
 
 function movePacman(e) {
+    if (isPaused) return;
     squares[pacmanCurrentIndex].classList.remove('pac-man');
     switch (e.key) {
         case 'ArrowLeft' : 
@@ -74,7 +109,7 @@ const moveDelay = 150;
 
 
 function movePacmanSmoothly(timestamp) {
-    if (!isMoving) return; 
+    if (!isMoving || isPaused) return; 
 
     if (timestamp - lastMoveTime >= moveDelay) {
     movePacman({ key: currentDirection }); 
@@ -84,7 +119,7 @@ requestAnimationFrame(movePacmanSmoothly);
 }
 
 function startMoving(e) {
-    if (isMoving) return; 
+    if (isMoving || isPaused) return; 
 
     currentDirection = e.key; 
     isMoving = true;
@@ -92,12 +127,74 @@ function startMoving(e) {
 }
 
 function stopMoving() {
+
     isMoving = false; 
+    cancelAnimationFrame(movePacmanSmoothly);
 }
 
 
-document.addEventListener('keydown', startMoving);
-document.addEventListener('keyup', stopMoving);
+//pausing the game
+function togglePause() {
+    isPaused = !isPaused;
+    if (isPaused) {
+        pauseMenu.classList.remove('hidden');
+    } else {
+        pauseMenu.classList.add('hidden');
+        if (isMoving) {
+            requestAnimationFrame(movePacmanSmoothly);
+        }
+    }
+}
+
+function stopAllAnimations() {
+    isMoving = false;
+    ghosts.forEach(ghost => cancelAnimationFrame(ghost.timerID));
+}
+
+function restartGame() {
+    // Reset game state
+    document.addEventListener('keyup', stopMoving);
+    score = 0;
+    scoreDisplay.innerHTML = score;
+    isPaused = false;
+    isMoving = false;
+    currentDirection = null;
+    lastMoveTime = 0;
+    pauseMenu.classList.add('hidden');
+    endMenu.classList.add('hidden');
+
+    //clear the game board
+    squares.forEach(square => {
+        square.classList.remove('pac-man', 'pac-dot', 'wall', 'ghost-lair', 'power-pellet', 'ghost', 'scared-ghost');
+    });
+    
+    ghosts.forEach(ghost => {
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
+        ghost.currentIndex = ghost.startIndex;
+        ghost.isScared = false;
+    })
+
+    createBoard();
+    
+    pacmanCurrentIndex = 490;
+    squares[pacmanCurrentIndex].classList.add('pac-man');
+
+    ghosts.forEach(ghost => {
+        
+        // ghost.currentIndex = ghost.startIndex;
+        // ghost.isScared = false;
+        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+
+        
+    });
+
+    isMoving = false; 
+
+    if (isMoving) {
+        requestAnimationFrame(movePacmanSmoothly);
+    }
+}
+
 
 // what happens when pac-man eats a pac-dot
 function pacDotEaten() {
@@ -196,6 +293,10 @@ function moveGhost(ghost) {
 
 
     function move(timestamp) {
+        if (isPaused) {
+            requestAnimationFrame(move);
+            return;
+        }
         // Check if enough time has passed to move the ghost based on speed
         if (timestamp - ghost.lastMoveTime >= ghost.speed) {
             ghost.lastMoveTime = timestamp;
@@ -252,25 +353,31 @@ function checkForGameOver() {
         squares[pacmanCurrentIndex].classList.contains('ghost') &&
         !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
     ) {
+        stopAllAnimations();
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
-        setTimeout(function() {
-            alert('Game Over')
-        }, 500)
+        squares.forEach(square => {
+            square.classList.remove('pac-man', 'ghost', 'scared-ghost');
+        });
+        endMessage.innerHTML = 'Game Over';
+        finalScore.innerHTML = score;
+        endMenu.classList.remove('hidden');
     }
 }
 
 function checkForWin() {
-    if (score >= 1000) {
+    if (score >= 50) {
+        stopAllAnimations();
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
-        setTimeout(function() {
-            alert('You have WON!!')
-        }, 500)
+        squares.forEach(square => {
+            square.classList.remove('pac-man', 'ghost', 'scared-ghost');
+        });
+        endMessage.innerHTML = 'You have WON!!';
+        finalScore.innerHTML = score;
+        endMenu.classList.remove('hidden');
     }
 }
-
-
 })
