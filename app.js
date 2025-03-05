@@ -136,20 +136,24 @@ function unScareGhosts() {
 // Create and move ghosts
 
 class Ghost {
-    constructor(className, startIndex, speed) {
+    constructor(className, startIndex, speed, exitDelay) {
         this.className = className;
         this. startIndex = startIndex;
         this.speed = speed;
         this.currentIndex = startIndex;
         this.isScared = false;
         this.timerID = NaN;
+        this.inLair = true;
+        this.exitDelay = exitDelay;
+        this.framesElapsed = 0;
+        this.lastMoveTime = 0;
     }
 }
 const ghosts =  [
-    new Ghost ('blinky', 348, 250),
-    new Ghost ('pinky', 376, 400),
-    new Ghost ('inky', 351, 300),
-    new Ghost ('clyde', 379, 500),
+    new Ghost ('blinky', 377, 250, 0),
+    new Ghost ('pinky', 378, 400, 180),
+    new Ghost ('inky', 405, 300, 300),
+    new Ghost ('clyde', 406, 500, 420),
 
 ]
 
@@ -157,23 +161,50 @@ ghosts.forEach(ghost => {
     squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
 });
 
-ghosts.forEach(ghost => moveGhost(ghost))
+ghosts.forEach(ghost => exitGhostLair(ghost))
+
+function exitGhostLair(ghost) {
+
+    function move(timestamp) {
+        if (ghost.framesElapsed < ghost.exitDelay) {
+            ghost.framesElapsed++
+        } else if (timestamp - ghost.lastMoveTime >= ghost.speed) {
+            ghost.lastMoveTime = timestamp;
+            
+            if (
+                !squares[ghost.currentIndex - width].classList.contains('ghost') &&
+                !squares[ghost.currentIndex - width].classList.contains('wall')
+            ){
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost');
+                ghost.currentIndex -= width;
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+            }
+            if (!squares[ghost.currentIndex].classList.contains('ghost-lair')){
+                moveGhost(ghost);
+                return;
+            } 
+        }
+        requestAnimationFrame(move);
+    }
+    requestAnimationFrame(move);
+}
 
 function moveGhost(ghost) {
+
     const directions = [-1, 1, width, -width];
     let direction = directions[Math.floor(Math.random() * directions.length)];
-    let lastMoveTime = 0;
+
 
     function move(timestamp) {
         // Check if enough time has passed to move the ghost based on speed
-        if (timestamp - lastMoveTime >= ghost.speed) {
-            lastMoveTime = timestamp;
+        if (timestamp - ghost.lastMoveTime >= ghost.speed) {
+            ghost.lastMoveTime = timestamp;
 
             // can move if the next index is not a wall nor have another ghost in it
             if (
-                direction &&
                 !squares[ghost.currentIndex + direction].classList.contains('ghost') &&
-                !squares[ghost.currentIndex + direction].classList.contains('wall')
+                !squares[ghost.currentIndex + direction].classList.contains('wall') &&
+                !squares[ghost.currentIndex + direction].classList.contains('ghost-lair')
             ) {
                 squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
                 ghost.currentIndex += direction;
@@ -186,7 +217,10 @@ function moveGhost(ghost) {
                 squares[ghost.currentIndex].classList.add('scared-ghost');
             }
 
-            checkForScaredGhost(ghost.currentIndex);
+            if (checkForScaredGhost(ghost, ghost.currentIndex)) {
+                exitGhostLair(ghost);
+                return;
+            }
             checkForGameOver();
         }
 
@@ -198,17 +232,19 @@ function moveGhost(ghost) {
     requestAnimationFrame(move);
 }
 
-function checkForScaredGhost(index) {
-    ghosts.forEach(ghost => {
-        if (ghost.currentIndex === index && pacmanCurrentIndex === index && ghost.isScared) {
-            squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
-                ghost.currentIndex = ghost.startIndex;
-                points = points * 2;
-                score += points;
-                scoreDisplay.innerHTML = score;
-                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-        }
-    })
+function checkForScaredGhost(ghost, index) {
+    if (ghost.currentIndex === index && pacmanCurrentIndex === index && ghost.isScared) {
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
+            ghost.currentIndex = ghost.startIndex;
+            ghost.isScared = false;
+            points = points * 2;
+            score += points;
+            scoreDisplay.innerHTML = score;
+            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+
+        return true
+    }
+    return false;
 }
 
 function checkForGameOver() {
@@ -226,7 +262,7 @@ function checkForGameOver() {
 }
 
 function checkForWin() {
-    if (score >= 300) {
+    if (score >= 1000) {
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
