@@ -36,8 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ]
     
-
-
 const squares = [];
 
 function createBoard() {
@@ -164,7 +162,16 @@ function powerPelletEaten() {
         score += 10;
         scoreDisplay.innerHTML = score;
         ghosts.forEach(ghost => ghost.isScared = true);
-        setTimeout(unScareGhosts, 10000);
+        let scareDuration = 10000; //10 seconds
+        let startTime = performance.now();
+        function checkUnscare(time) {
+            if (time - startTime >= scareDuration) {
+                unScareGhosts();
+            } else {
+                requestAnimationFrame(checkUnscare);
+            }
+        }
+        requestAnimationFrame(checkUnscare);
         squares[pacmanCurrentIndex].classList.remove('power-pellet');
     }
 }
@@ -202,37 +209,49 @@ ghosts.forEach(ghost => moveGhost(ghost))
 
 function moveGhost(ghost) {
     const directions = [-1, 1, width, -width];
-    let direction = directions[Math.floor(Math.random() * directions.length)]
+    let direction = directions[Math.floor(Math.random() * directions.length)];
+    let lastMoveTime = 0;
 
-    ghost.timerID = setInterval(function() {
-        // can move if the next index is not a wall nor have another ghost in it
-        if (
-            direction &&
-            !squares[ghost.currentIndex + direction].classList.contains('ghost') &&
-            !squares[ghost.currentIndex + direction].classList.contains('wall')
-        )
-        {
-            squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
-            ghost.currentIndex += direction;
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-        } else {
-            direction = directions[Math.floor(Math.random() * directions.length)];
+    function move(timestamp) {
+        // Check if enough time has passed to move the ghost based on speed
+        if (timestamp - lastMoveTime >= ghost.speed) {
+            lastMoveTime = timestamp;
+
+            // can move if the next index is not a wall nor have another ghost in it
+            if (
+                direction &&
+                !squares[ghost.currentIndex + direction].classList.contains('ghost') &&
+                !squares[ghost.currentIndex + direction].classList.contains('wall')
+            ) {
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
+                ghost.currentIndex += direction;
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+            } else {
+                direction = directions[Math.floor(Math.random() * directions.length)];
+            }
+
+            if (ghost.isScared) {
+                squares[ghost.currentIndex].classList.add('scared-ghost');
+            }
+
+            if (ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
+                ghost.currentIndex = ghost.startIndex;
+                points = points * 2;
+                score += points;
+                scoreDisplay.innerHTML = score;
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+            }
+
+            checkForGameOver();
         }
 
-        if (ghost.isScared) {
-            squares[ghost.currentIndex].classList.add('scared-ghost');
-        }
+        // Recursively call move function for the next frame
+        requestAnimationFrame(move);
+    }
 
-        if (ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
-            squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
-            ghost.currentIndex = ghost.startIndex;
-            points = points * 2;
-            score += points;
-            scoreDisplay.innerHTML = score;
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-        }
-        checkForGameOver();
-    }, ghost.speed)
+    // Start the recursive animation
+    requestAnimationFrame(move);
 }
 
 function checkForGameOver() {
