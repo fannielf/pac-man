@@ -116,8 +116,6 @@ function movePacman(e) {
     checkForWin()
 }
 
-document.addEventListener('keyup', movePacman);
-
 //moving the pac-man with arrow keys
 let isMoving = false;
 let currentDirection = null;
@@ -243,7 +241,8 @@ function checkForGameOver() {
         !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
     ) {
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
-        document.removeEventListener('keyup', movePacman)
+        document.removeEventListener('keyup', stopMoving)
+        document.removeEventListener('keydown', startMoving)
         setTimeout(function() {
             alert('Game Over')
         }, 500)
@@ -253,7 +252,8 @@ function checkForGameOver() {
 function checkForWin() {
     if (score >= 300) {
         ghosts.forEach(ghost => clearInterval(ghost.timerID))
-        document.removeEventListener('keyup', movePacman)
+        document.removeEventListener('keyup', stopMoving)
+        document.removeEventListener('keydown', startMoving)
         setTimeout(function() {
             alert('You have WON!!')
         }, 500)
