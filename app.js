@@ -109,6 +109,8 @@ function movePacman(e) {
             break;
     }
     squares[pacmanCurrentIndex].classList.add('pac-man');
+    
+    checkForScaredGhost(pacmanCurrentIndex)
     pacDotEaten()
     powerPelletEaten()
     checkForWin()
@@ -234,15 +236,7 @@ function moveGhost(ghost) {
                 squares[ghost.currentIndex].classList.add('scared-ghost');
             }
 
-            if (ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')) {
-                squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
-                ghost.currentIndex = ghost.startIndex;
-                points = points * 2;
-                score += points;
-                scoreDisplay.innerHTML = score;
-                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-            }
-
+            checkForScaredGhost(ghost.currentIndex);
             checkForGameOver();
         }
 
@@ -252,6 +246,19 @@ function moveGhost(ghost) {
 
     // Start the recursive animation
     requestAnimationFrame(move);
+}
+
+function checkForScaredGhost(index) {
+    ghosts.forEach(ghost => {
+        if (ghost.currentIndex === index && pacmanCurrentIndex === index && ghost.isScared) {
+            squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
+                ghost.currentIndex = ghost.startIndex;
+                points = points * 2;
+                score += points;
+                scoreDisplay.innerHTML = score;
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+        }
+    })
 }
 
 function checkForGameOver() {
