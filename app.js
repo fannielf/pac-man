@@ -118,6 +118,38 @@ function movePacman(e) {
 
 document.addEventListener('keyup', movePacman);
 
+//moving the pac-man with arrow keys
+let isMoving = false;
+let currentDirection = null;
+let lastMoveTime = 0;
+const moveDelay = 150;
+
+
+function movePacmanSmoothly(timestamp) {
+    if (!isMoving) return; 
+
+    if (timestamp - lastMoveTime >= moveDelay) {
+    movePacman({ key: currentDirection }); 
+    lastMoveTime = timestamp;
+}
+requestAnimationFrame(movePacmanSmoothly); 
+}
+
+function startMoving(e) {
+    if (isMoving) return; 
+
+    currentDirection = e.key; 
+    isMoving = true;
+    requestAnimationFrame(movePacmanSmoothly); 
+}
+
+function stopMoving() {
+    isMoving = false; 
+}
+
+
+document.addEventListener('keydown', startMoving);
+document.addEventListener('keyup', stopMoving);
 
 // what happens when pac-man eats a pac-dot
 function pacDotEaten() {
