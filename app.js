@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let score = 0;
     let points = 100;
     const grid = document.querySelector('.grid');
+    const pauseMenu = document.getElementById('pause-menu');
+    let isPaused = false;
 
     const layout = [
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -149,6 +151,29 @@ function stopMoving() {
 document.addEventListener('keydown', startMoving);
 document.addEventListener('keyup', stopMoving);
 
+//pausing the game
+function togglePause() {
+    isPaused = !isPaused;
+    if (isPaused) {
+        pauseMenu.classList.remove('hidden');
+    } else {
+        pauseMenu.classList.add('hidden');
+        if (isMoving) {
+            requestAnimationFrame(movePacmanSmoothly);
+        }
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === ' ') {
+        togglePause();
+    } else {
+        startMoving(e);
+    }
+});
+
+document.addEventListener('keyup', stopMoving);
+
 // what happens when pac-man eats a pac-dot
 function pacDotEaten() {
     if (squares[pacmanCurrentIndex].classList.contains('pac-dot')) {
@@ -205,6 +230,7 @@ function moveGhost(ghost) {
     let direction = directions[Math.floor(Math.random() * directions.length)]
 
     ghost.timerID = setInterval(function() {
+        if (isPaused) return;
         // can move if the next index is not a wall nor have another ghost in it
         if (
             direction &&
