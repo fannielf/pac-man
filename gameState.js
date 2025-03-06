@@ -1,5 +1,5 @@
 import { squares } from './gameBoard.js';
-import { pacmanCurrentIndex, startMoving, stopMoving, stopAllAnimations } from './pac-man.js';
+import { pacmanCurrentIndex, startMoving, stopAllAnimations } from './pac-man.js';
 import { score } from './scoring.js';
 import { endMenu } from './app.js';
 
