@@ -1,7 +1,7 @@
 import { squares, width } from './gameBoard.js';
 import { isPaused } from './app.js';
 import { scaredGhostEaten } from './scoring.js';
-import { checkForGameOver } from './gameState.js';
+import { gameOver } from './gameState.js';
 
 class Ghost {
     constructor(className, startIndex, speed, exitDelay) {
@@ -99,7 +99,7 @@ function moveGhost(ghost) {
                 exitGhostLair(ghost);
                 return;
             }
-            checkForGameOver();
+            if (gameOver()) return;
         }
 
         // Recursively call move function for the next frame
