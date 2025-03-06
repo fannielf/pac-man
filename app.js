@@ -19,17 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
 createBoard();
 
 //creating the event listeners
-document.addEventListener('keyup', stopMoving);
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keyup', function(e) {
     if (e.key === ' ') {
         e.preventDefault(); // Prevent default action
         togglePause();
-    } else if (e.key === 'r' && isPaused) {
+    } else {
+        stopMoving();
+    }
+    });
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'r' && isPaused) {
         e.preventDefault(); // Prevent default action
-        restartGame();
+        location.reload();
     } else if (e.key === 'Enter' && endMenu.classList.contains('hidden') === false) {
         e.preventDefault(); // Prevent default action
-        restartGame();
+        location.reload();
     } else {
         startMoving(e);
     }
@@ -40,8 +45,13 @@ resumeButton.addEventListener('click', function() {
         togglePause();
     }
 });
-restartButton.addEventListener('click', restartGame);
-playAgainButton.addEventListener('click', restartGame);
+restartButton.addEventListener('click', function() {
+    location.reload();
+});
+
+playAgainButton.addEventListener('click', function() {
+    location.reload();
+});
 
 // Create and move Pac-man
 
@@ -148,51 +158,9 @@ function togglePause() {
 
 function stopAllAnimations() {
     isMoving = false;
-    ghosts.forEach(ghost => cancelAnimationFrame(ghost.timerID));
-}
-
-function restartGame() {
-    // Reset game state
-    document.addEventListener('keyup', stopMoving);
-    score = 0;
-    scoreDisplay.innerHTML = score;
-    isPaused = false;
-    isMoving = false;
-    currentDirection = null;
-    lastMoveTime = 0;
-    pauseMenu.classList.add('hidden');
-    endMenu.classList.add('hidden');
-
-    //clear the game board
-    squares.forEach(square => {
-        square.classList.remove('pac-man', 'pac-dot', 'wall', 'ghost-lair', 'power-pellet', 'ghost', 'scared-ghost');
-    });
-    
     ghosts.forEach(ghost => {
-        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
-        ghost.currentIndex = ghost.startIndex;
-        ghost.isScared = false;
-    })
-
-    createBoard();
-    
-    pacmanCurrentIndex = 490;
-    squares[pacmanCurrentIndex].classList.add('pac-man');
-
-    ghosts.forEach(ghost => {
-        
-        // ghost.currentIndex = ghost.startIndex;
-        // ghost.isScared = false;
-        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-
-        
+        cancelAnimationFrame(ghost.timerID);
     });
-
-    isMoving = false; 
-
-    if (isMoving) {
-        requestAnimationFrame(movePacmanSmoothly);
-    }
 }
 
 
@@ -263,6 +231,10 @@ ghosts.forEach(ghost => exitGhostLair(ghost))
 function exitGhostLair(ghost) {
 
     function move(timestamp) {
+        if (isPaused) {
+            ghost.timerID = requestAnimationFrame(move);
+            return;
+        }
         if (ghost.framesElapsed < ghost.exitDelay) {
             ghost.framesElapsed++
         } else if (timestamp - ghost.lastMoveTime >= ghost.speed) {
@@ -281,9 +253,9 @@ function exitGhostLair(ghost) {
                 return;
             } 
         }
-        requestAnimationFrame(move);
+        ghost.timerID = requestAnimationFrame(move);
     }
-    requestAnimationFrame(move);
+    ghost.timerID = requestAnimationFrame(move);
 }
 
 function moveGhost(ghost) {
@@ -294,7 +266,7 @@ function moveGhost(ghost) {
 
     function move(timestamp) {
         if (isPaused) {
-            requestAnimationFrame(move);
+            ghost.timerID = requestAnimationFrame(move);
             return;
         }
         // Check if enough time has passed to move the ghost based on speed
@@ -326,11 +298,11 @@ function moveGhost(ghost) {
         }
 
         // Recursively call move function for the next frame
-        requestAnimationFrame(move);
+        ghost.timerID = requestAnimationFrame(move);
     }
 
     // Start the recursive animation
-    requestAnimationFrame(move);
+    ghost.timerID = requestAnimationFrame(move);
 }
 
 function checkForScaredGhost(ghost, index) {
@@ -354,7 +326,6 @@ function checkForGameOver() {
         !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
     ) {
         stopAllAnimations();
-        ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
         squares.forEach(square => {
@@ -369,7 +340,6 @@ function checkForGameOver() {
 function checkForWin() {
     if (score >= 50) {
         stopAllAnimations();
-        ghosts.forEach(ghost => clearInterval(ghost.timerID))
         document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
         squares.forEach(square => {
