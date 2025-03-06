@@ -29,6 +29,7 @@ const layout = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 ]
 
+export const width = 28;
 export const squares = [];
 const grid = document.querySelector('.grid');
 
@@ -50,3 +51,5 @@ for (let i = 0; i < layout.length; i++) {
     }
 }
 }
+
+createBoard();
