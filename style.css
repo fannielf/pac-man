@@ -25,8 +25,12 @@ html, body {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    z-index: 1;
-    position: relative;
+    transition: opacity 0.2s linear;
+    opacity: 1;
+}
+
+.hidden-pac-dot {
+    opacity: 0;
 }
 
 .wall {
@@ -36,16 +40,13 @@ html, body {
 .power-pellet {
     background-color: rgb(35, 94, 9);
     border-radius: 10px;
-    z-index: 1;
 }
 
 .blinky {
-    background-image: url('images/blinky.webp');
+    background-image: url('images/blinky.png');
     background-size: cover;
-    width: 20px;
-    height: 20px;
-    z-index: 3;
-    position: relative;
+    width: 15px;
+    height: 15px;
 }
 
 .pinky {
@@ -53,8 +54,6 @@ html, body {
     background-size: cover;
     width: 20px;
     height: 20px;
-    z-index: 3;
-    position: relative;
 }
 
 .inky {
@@ -62,8 +61,6 @@ html, body {
     background-size: cover;
     width: 20px;
     height: 20px;
-    z-index: 3;
-    position: relative;
 }
 
 .clyde {
@@ -71,8 +68,6 @@ html, body {
     background-size: cover;
     width: 20px;
     height: 20px;
-    z-index: 3;
-    position: relative;
 }
 
 @keyframes eat {
@@ -85,26 +80,26 @@ html, body {
 }
 
 .pac-man {
-    /* background-image: url('images/pacman1.png'); */
+    background-image: url('images/pacman.png');
+    background-size: cover;
     width: 100px;  
     height: 100px; 
-    background-color: rgb(239, 239, 17);  
+    /* background-color: rgb(239, 239, 17);  
     border-radius: 50%;  
     animation: eat 0.4s infinite steps(2); 
-    position: relative;
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
-    transition: transform 0.2s linear;
-    z-index: 3;
+    transition: transform 0.2s linear; */
 }
 
 .scared-ghost {
     background-image: url('images/scared.webp');
     background-size: cover; 
     background-position: center;
-    z-index: 2;
+    /* z-index: 2; */
     /* position: relative; */
     width: 20px;
     height: 20px;
+    filter: hue-rotate(480deg) saturate(300%);
 
    
 }

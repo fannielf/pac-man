@@ -6,7 +6,7 @@ import { checkForGameOver } from './gameState.js';
 class Ghost {
     constructor(className, startIndex, speed, exitDelay) {
         this.className = className;
-        this. startIndex = startIndex;
+        this.startIndex = startIndex;
         this.speed = speed;
         this.currentIndex = startIndex;
         this.isScared = false;
@@ -59,6 +59,28 @@ function exitGhostLair(ghost) {
     ghost.timerID = requestAnimationFrame(move);
 }
 
+function checkGhostOnPacDot(ghost) {
+    const ghostIndex = ghost.currentIndex;  
+
+    if (squares[ghostIndex].classList.contains("pac-dot")) {
+        squares[ghostIndex].classList.remove("pac-dot");
+
+        
+        setTimeout(() => {
+            squares[ghostIndex].classList.add("pac-dot");
+        }, 20);
+    }
+
+    if (squares[ghostIndex].classList.contains("power-pellet")) {
+        squares[ghostIndex].classList.remove("power-pellet");
+
+        setTimeout(() => {
+            squares[ghostIndex].classList.add("power-pellet");
+        }, 20); 
+    }
+}
+
+
 function moveGhost(ghost) {
 
     const directions = [-1, width, 1, -width];
@@ -70,6 +92,8 @@ function moveGhost(ghost) {
             ghost.timerID = requestAnimationFrame(move);
             return;
         }
+
+        checkGhostOnPacDot(ghost);
         // Check if enough time has passed to move the ghost based on speed
         if (timestamp - ghost.lastMoveTime >= ghost.speed) {
             ghost.lastMoveTime = timestamp;
