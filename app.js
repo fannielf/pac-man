@@ -22,11 +22,14 @@ document.addEventListener('keyup', function(e) {
         e.preventDefault(); 
         location.reload();
     } else {
-        stopMoving();
-    }
+        if (!endMenu.classList.contains('hidden')) {
+            // Game is over, do nothing (skip stopMoving)
+            return;
+        }
+        stopMoving();    }
     });
 
-document.addEventListener('keydown', (e) => startMoving(e));
+document.addEventListener('keydown', startMoving);
 
 resumeButton.addEventListener('click', function() {
     if (isPaused) {

@@ -12,9 +12,9 @@ export function gameOver() {
         !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
     ) {
         stopAllAnimations();
-        document.removeEventListener('keyup', stopMoving)
+        console.log("removing event listeners")
         document.removeEventListener('keydown', startMoving)
-
+        console.log("removing classes from classList")
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');
         });
@@ -29,7 +29,6 @@ export function gameOver() {
 export function checkForWin() {
     if (score >= 50) {
         stopAllAnimations();
-        document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');
