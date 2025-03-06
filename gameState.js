@@ -6,27 +6,29 @@ import { endMenu } from './app.js';
 const endMessage = document.getElementById('end-message');
 const finalScore = document.getElementById('final-score');
 
-export function checkForGameOver() {
+export function gameOver() {
     if (
         squares[pacmanCurrentIndex].classList.contains('ghost') &&
         !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
     ) {
         stopAllAnimations();
-        document.removeEventListener('keyup', stopMoving)
+        console.log("removing event listeners")
         document.removeEventListener('keydown', startMoving)
+        console.log("removing classes from classList")
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');
         });
         endMessage.innerHTML = 'Game Over';
         finalScore.innerHTML = score;
         endMenu.classList.remove('hidden');
+        return true
     }
+    return false
 }
 
 export function checkForWin() {
     if (score >= 50) {
         stopAllAnimations();
-        document.removeEventListener('keyup', stopMoving)
         document.removeEventListener('keydown', startMoving)
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');
