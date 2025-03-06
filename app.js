@@ -105,7 +105,6 @@ function movePacman(e) {
     }
     squares[pacmanCurrentIndex].classList.add('pac-man');
     
-    checkForScaredGhost(pacmanCurrentIndex)
     pacDotEaten()
     powerPelletEaten()
     checkForWin()
@@ -272,6 +271,10 @@ function moveGhost(ghost) {
         // Check if enough time has passed to move the ghost based on speed
         if (timestamp - ghost.lastMoveTime >= ghost.speed) {
             ghost.lastMoveTime = timestamp;
+            if (checkForScaredGhost(ghost, ghost.currentIndex)) {
+                exitGhostLair(ghost);
+                return;
+            }
 
             // can move if the next index is not a wall nor have another ghost in it
             if (
