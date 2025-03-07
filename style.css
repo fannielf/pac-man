@@ -77,6 +77,7 @@ html, body {
     background-size: cover;
     width: 100px;  
     height: 100px; 
+    transition: transform 0.1s ease;
 }
 
 .scared-ghost {
@@ -118,4 +119,13 @@ html, body {
 
 .hidden {
     display: none;
+}
+
+#timer {
+    font-size: 20px;
+    font-weight: bold;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: relative;
 }
