@@ -1,4 +1,5 @@
 import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
+import { startTimer, stopTimer } from './gameState.js';
 
 export let isPaused = false;
     
@@ -9,6 +10,7 @@ const restartButton = document.getElementById('restart-button');
 const playAgainButton = document.getElementById('play-again-button');
 
 document.addEventListener('DOMContentLoaded', function() {
+    startTimer();
 
 //creating the event listeners
 document.addEventListener('keyup', function(e) {
@@ -51,6 +53,7 @@ playAgainButton.addEventListener('click', function() {
 function togglePause() {
     isPaused = !isPaused;
     if (isPaused) {
+        stopTimer();
         pauseMenu.classList.remove('hidden');
     } else {
         pauseMenu.classList.add('hidden');

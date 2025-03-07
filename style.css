@@ -84,11 +84,7 @@ html, body {
     background-size: cover;
     width: 100px;  
     height: 100px; 
-    /* background-color: rgb(239, 239, 17);  
-    border-radius: 50%;  
-    animation: eat 0.4s infinite steps(2); 
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
-    transition: transform 0.2s linear; */
+    transition: transform 0.1s ease;
 }
 
 .scared-ghost {
@@ -134,4 +130,13 @@ html, body {
 
 .hidden {
     display: none;
+}
+
+#timer {
+    font-size: 20px;
+    font-weight: bold;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: relative;
 }
