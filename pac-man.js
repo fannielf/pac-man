@@ -1,16 +1,16 @@
 import { squares, width } from './gameBoard.js';
-import { isPaused } from './app.js';
-import { pacDotEaten, powerPelletEaten } from './scoring.js';
-import { checkForWin, gameOver } from './gameState.js';
+import { isPaused, frameTime } from './app.js';
+import { pacDotEaten, powerPelletEaten, scaredGhostEaten } from './scoring.js';
+import {  gameOver } from './gameState.js';
 import { ghosts } from './ghosts.js';
 
 export let pacmanCurrentIndex = 490;
 squares[pacmanCurrentIndex].classList.add('pac-man');
 
 export let isMoving = false;
-let lastMoveTime = 0;
+let lastTimestamp = 0;
 let currentDirection = null;
-const moveDelay = 150;
+const speed = 0.4;
 
 let animationFrameId; 
 
@@ -36,7 +36,6 @@ export function movePacman(data) {
     
     pacDotEaten()
     powerPelletEaten()
-    checkForWin()
 }
 
 // Helper to calculate the next index based on direction
@@ -89,19 +88,26 @@ function getNextIndex(currentIndex, key) {
 export function movePacmanSmoothly(timestamp) {
     if (!isMoving || isPaused) return; 
 
-    if (timestamp - lastMoveTime >= moveDelay) {
-    movePacman({ key: currentDirection }); 
-    lastMoveTime = timestamp;
+    if (!lastTimestamp) lastTimestamp = timestamp;
+    const deltaTime = timestamp - lastTimestamp; // Time since last frame
+        
+    const moveStep = (deltaTime / frameTime) * speed; // Scale movement speed
+
+    if (moveStep >= 1) {  // Only move when enough step value accumulates
+        movePacman({ key: currentDirection });
+        lastTimestamp = timestamp;
+    }
+    animationFrameId = requestAnimationFrame(movePacmanSmoothly); 
 }
-animationFrameId = requestAnimationFrame(movePacmanSmoothly); 
-}
+
 
 export function startMoving(e) {
     if (isMoving || isPaused) return; 
     
     currentDirection = e.key; 
     isMoving = true;
-    movePacmanSmoothly();
+    lastTimestamp = 0; // Reset timestamp
+    movePacmanSmoothly(performance.now());
     return
 }
 
@@ -114,9 +120,7 @@ export function stopMoving() {
 export function stopAllAnimations() {
     console.log("stopping all animations")
     isMoving = false;
-    console.log(`isMoving value ${isMoving}`)
     cancelAnimationFrame(animationFrameId);
-    console.log(animationFrameId)
     ghosts.forEach(ghost => {
         cancelAnimationFrame(ghost.timerID);
     });

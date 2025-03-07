@@ -27,7 +27,7 @@ export function gameOver() {
 }
 
 export function checkForWin() {
-    if (score >= 50) {
+    if (score >= 1000) {
         stopAllAnimations();
         document.removeEventListener('keydown', startMoving)
         squares.forEach(square => {
