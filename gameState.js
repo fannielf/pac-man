@@ -1,39 +1,11 @@
 import { squares } from './gameBoard.js';
 import { pacmanCurrentIndex, startMoving, stopAllAnimations } from './pac-man.js';
 import { score } from './scoring.js';
-import { endMenu } from './app.js';
+import { endMenu, stopTimer } from './app.js';
 
 const endMessage = document.getElementById('end-message');
 const finalScore = document.getElementById('final-score');
 const finalTime = document.getElementById('final-time');
-
-let timer = 0;
-let timerInterval;
-let isTimerRunning = false;
-
-export function startTimer() {
-    if (isTimerRunning) return;
-
-    timer = 0;
-    isTimerRunning = true;
-    updateTimerDisplay();
-
-    timerInterval = setInterval(() => {
-        timer++;
-        updateTimerDisplay();
-    }, 1000);
-}
-
-function updateTimerDisplay() {
-    const minutes = Math.floor(timer / 60);
-    const seconds = timer % 60;
-    document.getElementById('timer').textContent = `Time: ${minutes}m ${seconds}s`;
-}
-
-export function stopTimer() {
-    clearInterval(timerInterval);
-    isTimerRunning = false;
-}
 
 export function gameOver() {
     if (
