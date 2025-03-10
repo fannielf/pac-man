@@ -58,7 +58,7 @@ function getNextIndex(currentIndex, key) {
                 nextIndex = currentIndex - 1;
             }
             break;
-        case 'ArrowRight': 
+        case 'ArrowRight':
             if (squares[pacmanCurrentIndex+1] === squares[392]) {
                 return 364
             } else if (
@@ -112,6 +112,7 @@ function updatePacmanDirection(direction) {
 }
 
 export function movePacmanSmoothly(timestamp) {
+    const frameTime = 1000 / 60;
     if (!isMoving || isPaused) return; 
 
     if (!lastTimestamp) lastTimestamp = timestamp;
@@ -135,7 +136,7 @@ export function startMoving(e) {
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp
-    movePacmanSmoothly(performance.now());
+    movePacmanSmoothly();
     return
 }
 
