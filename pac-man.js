@@ -112,7 +112,6 @@ function updatePacmanDirection(direction) {
 }
 
 export function movePacmanSmoothly(timestamp) {
-    const frameTime = 1000 / 60;
     if (!isMoving || isPaused) return; 
 
     if (!lastTimestamp) lastTimestamp = timestamp;
@@ -136,7 +135,7 @@ export function startMoving(e) {
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp
-    movePacmanSmoothly();
+    movePacmanSmoothly(performance.now());
     return
 }
 
