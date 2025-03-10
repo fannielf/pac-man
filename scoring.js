@@ -4,6 +4,7 @@ import { ghosts } from "./ghosts.js";
 import { checkForWin } from "./gameState.js";
 
 export let score = 0;
+let scareEndTime = 0; // Track when scare mode should end
 let points = 100;
 const scoreDisplay = document.getElementById('score');
 
@@ -23,10 +24,9 @@ export function powerPelletEaten() {
         score += 10;
         scoreDisplay.innerHTML = score;
         ghosts.forEach(ghost => ghost.isScared = true);
-        let scareDuration = 10000; //10 seconds
-        let startTime = performance.now();
+        scareEndTime = performance.now() + 10000;
         function checkUnscare(time) {
-            if (time - startTime >= scareDuration) {
+            if (time >= scareEndTime) {
                 unScareGhosts();
             } else {
                 requestAnimationFrame(checkUnscare);
@@ -49,6 +49,7 @@ export function scaredGhostEaten(ghost) {
         squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
             ghost.currentIndex = ghost.startIndex;
             ghost.isScared = false;
+            ghost.wanderingTime = 0;
             points = points * 2;
             score += points;
             scoreDisplay.innerHTML = score;

@@ -51,7 +51,7 @@ playAgainButton.addEventListener('click', function() {
 
 })
 
-let timer = 0;
+export let timer = 0;
 let timerInterval;
 let isTimerRunning = false;
 

@@ -1,7 +1,7 @@
 import { squares } from './gameBoard.js';
 import { pacmanCurrentIndex, startMoving, stopAllAnimations } from './pac-man.js';
 import { score } from './scoring.js';
-import { endMenu, stopTimer } from './app.js';
+import { endMenu, stopTimer, timer } from './app.js';
 
 const endMessage = document.getElementById('end-message');
 const finalScore = document.getElementById('final-score');
@@ -13,10 +13,8 @@ export function gameOver() {
         !squares[pacmanCurrentIndex].classList.contains('scared-ghost')
     ) {
         stopAllAnimations();
-        console.log("removing event listeners")
         document.removeEventListener('keydown', startMoving)
         stopTimer();
-        console.log("removing classes from classList")
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');
         });
