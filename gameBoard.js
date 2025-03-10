@@ -30,7 +30,6 @@ const layout = [
 ];
 
 export const width = layout.length;
-console.log(width)
 export const squares = [];
 const grid = document.querySelector('.grid');
 

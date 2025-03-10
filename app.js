@@ -11,8 +11,9 @@ const restartButton = document.getElementById('restart-button');
 const playAgainButton = document.getElementById('play-again-button');
 
 document.addEventListener('DOMContentLoaded', function() {
-    startTimer();
 
+    startTimer()
+    
 //creating the event listeners
 document.addEventListener('keyup', function(e) {
     if (e.key === ' ') {
