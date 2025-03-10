@@ -3,6 +3,7 @@ import { isPaused, frameTime } from './app.js';
 import { scaredGhostEaten } from './scoring.js';
 import { gameOver } from './gameState.js';
 import { pacmanCurrentIndex } from './pac-man.js';
+import { loseLife } from './gameState.js';
 
 class Ghost {
     constructor(className, startIndex, speed, exitDelay) {
@@ -60,9 +61,16 @@ function moveGhost(ghost) {
             return;
         }
 
-        if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
-        const deltaTime = timestamp - ghost.lastMoveTime;
-        const moveStep = (deltaTime / frameTime) * ghost.speed;
+    if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
+    const deltaTime = timestamp - ghost.lastMoveTime;
+    const moveStep = (deltaTime / frameTime) * ghost.speed;
+
+    // Check for ghost collision with Pac-Man
+    if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
+        // Pac-Man is caught by a ghost, so lose a life
+        loseLife();
+        return;
+    }
 
         if (scaredGhostEaten(ghost)) {
             escapeLair(ghost);
@@ -93,7 +101,6 @@ function moveGhost(ghost) {
             if (ghost.isScared) squares[ghost.currentIndex].classList.add('scared-ghost');
         }
 
-        if (gameOver()) return;
         // Recursively call move function for the next frame
         ghost.timerID = requestAnimationFrame(move);
     }
@@ -253,4 +260,20 @@ function escapePacman(ghost, validMoves) {
 
     // Return the move (or stay in place if no move is found)
     return escapeMove || { index: ghost.currentIndex, direction: null };
+}
+
+export function resetGhosts() {
+    ghosts.forEach(ghost => {
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');  
+        ghost.currentIndex = ghost.startIndex;
+        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+        ghost.isScared = false;
+        ghost.framesElapsed = 0;
+        ghost.lastMoveTime = 0;
+        ghost.lastDirection = null; 
+        ghost.wanderingTime = 100;
+    });
+    ghosts.forEach(ghost => {
+        ghost.timerID = requestAnimationFrame((timestamp) => moveGhost(ghost, timestamp));  
+    });
 }

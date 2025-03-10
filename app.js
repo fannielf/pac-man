@@ -55,7 +55,7 @@ export let timer = 0;
 let timerInterval;
 let isTimerRunning = false;
 
-function startTimer() {
+export function startTimer() {
     if (isTimerRunning) return;
 
     timer = 0;
@@ -68,10 +68,11 @@ function startTimer() {
     }, 1000);
 }
 
-function updateTimerDisplay() {
+export function updateTimerDisplay() {
     const minutes = Math.floor(timer / 60);
     const seconds = timer % 60;
     document.getElementById('timer').textContent = `Time: ${minutes}m ${seconds}s`;
+    document.getElementById('final-time').textContent = `${minutes}m ${seconds}s`; 
 }
 
 export function stopTimer() {

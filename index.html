@@ -14,8 +14,13 @@
     </head>
     <body>
         <div class="grid"></div>
+
+        <div class="game-info">
         <h3>Score:<span id="score"></span></h3>
         <div id="timer">Time: 0s</div>
+        <div id="lives">Lives:</div>
+        </div>
+
         <div id="pause-menu" class="hidden">
             <h1>Paused</h1>
             <p>Press Space to Resume</p>
@@ -23,6 +28,7 @@
             <button id="resume-button">Resume</button>
             <button id="restart-button">Restart</button>
         </div>
+        
         <div id="end-menu" class="hidden">
             <h1 id="end-message"></h1>
             <p>Score: <span id ="final-score"></span></p>
