@@ -22,9 +22,9 @@ class Ghost {
 
 export const ghosts = [
     new Ghost('blinky', 377, 0.1, 0),
-    new Ghost('pinky', 378, 0.05, 180),
-    new Ghost('inky', 405, 0.03, 300),
-    new Ghost('clyde', 406, 0.04, 420),
+    new Ghost('pinky', 378, 0.08, 180),
+    new Ghost('inky', 405, 0.07, 300),
+    new Ghost('clyde', 406, 0.06, 420),
 ];
 
 const directions = [-1, 1, width, -width]; // left, right, up, down
