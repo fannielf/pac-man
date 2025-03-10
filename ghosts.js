@@ -3,6 +3,7 @@ import { isPaused, frameTime } from './app.js';
 import { scaredGhostEaten } from './scoring.js';
 import { gameOver } from './gameState.js';
 import { pacmanCurrentIndex } from './pac-man.js';
+import { loseLife } from './gameState.js';
 
 class Ghost {
     constructor(className, startIndex, speed, exitDelay) {
@@ -58,6 +59,13 @@ function moveGhost(ghost, timestamp) {
     if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
     const deltaTime = timestamp - ghost.lastMoveTime;
     const moveStep = (deltaTime / frameTime) * ghost.speed;
+
+    // Check for ghost collision with Pac-Man
+    if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
+        // Pac-Man is caught by a ghost, so lose a life
+        loseLife();
+        return;
+    }
 
     // If ghost is in the lair and not ready to exit, handle lair exit logic
     if (ghost.framesElapsed < ghost.exitDelay) {
@@ -156,3 +164,18 @@ function moveGhost(ghost, timestamp) {
 ghosts.forEach(ghost => {
     ghost.timerID = requestAnimationFrame((timestamp) => moveGhost(ghost, timestamp));
 });
+
+export function resetGhosts() {
+    ghosts.forEach(ghost => {
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');  
+        ghost.currentIndex = ghost.startIndex;
+        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+        ghost.isScared = false;
+        ghost.framesElapsed = 0;
+        ghost.lastMoveTime = 0;
+        ghost.direction = null; 
+    });
+    ghosts.forEach(ghost => {
+        ghost.timerID = requestAnimationFrame((timestamp) => moveGhost(ghost, timestamp));  
+    });
+}

@@ -1,7 +1,7 @@
 import { squares, width } from './gameBoard.js';
 import { isPaused, frameTime } from './app.js';
 import { pacDotEaten, powerPelletEaten, scaredGhostEaten } from './scoring.js';
-import {  gameOver } from './gameState.js';
+import {  checkForWin, loseLife } from './gameState.js';
 import { ghosts } from './ghosts.js';
 
 export let pacmanCurrentIndex = 490;
@@ -11,6 +11,7 @@ export let isMoving = false;
 let lastTimestamp = 0;
 let currentDirection = null;
 const speed = 0.4;
+let lastMoveTime = 0;
 
 let animationFrameId; 
 
@@ -25,11 +26,14 @@ export function movePacman(data) {
     const ghostAtNextSquare = ghosts.find(ghost => ghost.currentIndex === nextIndex);
     
     if (ghostAtNextSquare) {
+       
         if (ghostAtNextSquare.isScared) {
-            // Pac-Man eats the scared ghost
+            console.log("Pacman hit a ghost!");
             scaredGhostEaten(ghostAtNextSquare);
-        } else if (gameOver) {
-            return; // Prevent Pac-Man from moving
+        } else {
+            loseLife();  // Pac-Man loses a life
+            return; // Prevent Pac-Man from moving further until reset
+            
         }
     }
     
@@ -39,8 +43,9 @@ export function movePacman(data) {
 
     updatePacmanDirection(key);
     
-    pacDotEaten()
-    powerPelletEaten()
+    pacDotEaten();
+    powerPelletEaten();
+    checkForWin();
 }
 
 // Helper to calculate the next index based on direction
@@ -151,4 +156,13 @@ export function stopAllAnimations() {
     ghosts.forEach(ghost => {
         cancelAnimationFrame(ghost.timerID);
     });
+}
+
+export function resetPacman() {
+    squares[pacmanCurrentIndex].classList.remove('pac-man');
+    pacmanCurrentIndex = 490;
+    squares[pacmanCurrentIndex].classList.add('pac-man');
+    isMoving = false;
+    lastMoveTime = 0;
+    currentDirection = null;
 }
