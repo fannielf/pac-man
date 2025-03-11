@@ -2,7 +2,7 @@ import { squares } from './gameBoard.js';
 import { pacmanCurrentIndex, startMoving, stopAllAnimations } from './pac-man.js';
 import { score } from './scoring.js';
 import { endMenu, stopTimer, timer } from './app.js';
-import { ghosts, resetGhosts } from './ghosts.js';
+import { ghosts, resetGhosts, moveGhost } from './ghosts.js';
 import { resetPacman } from './pac-man.js';
 
 const endMessage = document.getElementById('end-message');
@@ -38,8 +38,9 @@ export function loseLife() {
 function resetGameAfterLifeLost() {
     resetPacman();
     resetGhosts();
-    document.addEventListener('keydown', startMoving);
+    
 }
+
 
 
 export function gameOver() {
@@ -47,7 +48,7 @@ export function gameOver() {
     stopAllAnimations();
     document.removeEventListener('keydown', startMoving);
     stopTimer();
-    document.getElementById('pause-button').classList.add('hidden');
+    document.getElementById('pause-menu').classList.add('hidden');
 
     squares.forEach(square => {
         square.classList.remove('pac-man', 'ghost', 'scared-ghost');
@@ -67,7 +68,7 @@ export function checkForWin() {
         stopAllAnimations();
         document.removeEventListener('keydown', startMoving)
         stopTimer();
-        document.getElementById('pause-button').classList.add('hidden');
+        document.getElementById('pause-menu').classList.add('hidden');
 
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');

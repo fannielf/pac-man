@@ -53,23 +53,27 @@ function getValidNeighbors(index, lastDirection) {
     return neighbors;
 }
 
-function moveGhost(ghost) {
+export function moveGhost(ghost) {
     function move(timestamp) {
         // If paused, skip the move
         if (isPaused) {
             ghost.timerID = requestAnimationFrame(move);
             return;
         }
-
-    if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
-    const deltaTime = timestamp - ghost.lastMoveTime;
-    const moveStep = (deltaTime / frameTime) * ghost.speed;
+        
+        if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
+        const deltaTime = timestamp - ghost.lastMoveTime;
+        const moveStep = (deltaTime / frameTime) * ghost.speed;
+    
 
     // Check for ghost collision with Pac-Man
     if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
         // Pac-Man is caught by a ghost, so lose a life
         loseLife();
-        return;
+        ghosts.forEach(ghost => {
+            escapeLair(ghost); 
+        });
+        return; 
     }
 
         if (scaredGhostEaten(ghost)) {
@@ -263,7 +267,9 @@ function escapePacman(ghost, validMoves) {
 }
 
 export function resetGhosts() {
-    ghosts.forEach(ghost => {
+    console.log("resetGhosts() called!");
+    ghosts.forEach(ghost => { 
+        cancelAnimationFrame(ghost.timerID);
         squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');  
         ghost.currentIndex = ghost.startIndex;
         squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
@@ -271,9 +277,6 @@ export function resetGhosts() {
         ghost.framesElapsed = 0;
         ghost.lastMoveTime = 0;
         ghost.lastDirection = null; 
-        ghost.wanderingTime = 100;
-    });
-    ghosts.forEach(ghost => {
-        ghost.timerID = requestAnimationFrame((timestamp) => moveGhost(ghost, timestamp));  
+        ghost.wanderingTime = 0;
     });
 }

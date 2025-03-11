@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     startTimer()
     
+    
 //creating the event listeners
 document.addEventListener('keyup', function(e) {
     if (e.key === ' ') {
