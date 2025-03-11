@@ -59,7 +59,6 @@ export function gameOver() {
     const seconds = timer % 60;
     finalTime.innerHTML = `${minutes}m ${seconds}s`;
     endMenu.classList.remove('hidden');
-    return true;
 }
 
 

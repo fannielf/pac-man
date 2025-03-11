@@ -1,7 +1,6 @@
 import { squares, width } from './gameBoard.js';
 import { isPaused, frameTime } from './app.js';
 import { scaredGhostEaten } from './scoring.js';
-import { gameOver } from './gameState.js';
 import { pacmanCurrentIndex } from './pac-man.js';
 import { loseLife } from './gameState.js';
 
@@ -37,15 +36,14 @@ ghosts.forEach(ghost => {
 });
 
 // Simple function to get the valid neighboring squares
-function getValidNeighbors(index, lastDirection) {
+function getValidNeighbors(index) {
     const neighbors = [];
     directions.forEach(direction => {
         const nextIndex = index + direction;
         if (
             !squares[nextIndex].classList.contains('wall') &&
             !squares[nextIndex].classList.contains('ghost') &&
-            !squares[nextIndex].classList.contains('ghost-lair') &&
-            (direction !== -lastDirection)  // Avoid reversing direction
+            !squares[nextIndex].classList.contains('ghost-lair')
         ) {
             neighbors.push({ index: nextIndex, direction });  // Store both index and direction
         }
@@ -89,9 +87,6 @@ export function moveGhost(ghost) {
 
             // Can move if the next index is not a wall nor have another ghost in it
             if (
-                !squares[bestMove.index].classList.contains('ghost') &&
-                !squares[bestMove.index].classList.contains('wall') &&
-                !squares[bestMove.index].classList.contains('ghost-lair') &&
                 ghost.currentIndex !== bestMove.index
             ) {
                 squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
@@ -151,34 +146,38 @@ function escapeLair(ghost) {
 }
 
 
-// Ghost AI that switches between DFS and BFS
+// Ghost AI that switches between different movement patterns
 function ghostAI(ghost) {
-    // Increase wandering time (DFS) for a while before switching to BFS
+    // Increase wandering time
     ghost.wanderingTime++;
 
-    const validNeighbors = getValidNeighbors(ghost.currentIndex, ghost.lastDirection);
+    const validNeighbors = getValidNeighbors(ghost.currentIndex);
 
     if (validNeighbors.length === 0) {
         return { index: ghost.currentIndex, direction: null };
-    } else if (ghost.wanderingTime < 300) {  // First 300 frames (adjust as needed)
-        return randomMove(validNeighbors);  // Random wandering (DFS)
     } else if (ghost.isScared) {
         return escapePacman(ghost, validNeighbors);
+    } else if (ghost.wanderingTime < 150) {  // Wandering 2sec with the rate of 60FPS
+        return randomMove(ghost, validNeighbors);
     } else if (ghost.className === 'inky' || ghost.className === 'clyde') {
         return dfsMove(ghost, pacmanCurrentIndex);
     } else {
-        return bfsMove(ghost, pacmanCurrentIndex);  // Chase Pac-Man (BFS)
+        return bfsMove(ghost, pacmanCurrentIndex);
     }
 }
 
 // Random wandering in the beginning
-function randomMove(validNeighbors) {
+function randomMove(ghost, validNeighbors) {
+    if (Object.keys(validNeighbors).length > 1) {
+        const oppositeDirection = -ghost.lastDirection;
+        validNeighbors = validNeighbors.filter(move => move.direction !== oppositeDirection);
+    }
     
     const randomMove = validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
     return { index: randomMove.index, direction: randomMove.direction };
 }
 
-// DFS: Pathfinding towards Pac-Man
+// Depth-First-Search algorithm to pathfinding towards Pac-Man
 function dfsMove(ghost, goalIndex) {
     const startIndex = ghost.currentIndex;
     let stack = [{ index: startIndex, path: [startIndex], direction: null }];
@@ -204,11 +203,10 @@ function dfsMove(ghost, goalIndex) {
         }
     }
 
-    // No valid path found, stay in place
     return { index: startIndex, direction: null };
 }
 
-// BFS: Shortest path to target (Pac-Man)
+// Breath-First-Search algorithm to find the shortest path to Pac-Man
 function bfsMove(ghost, goalIndex) {
     const startIndex = ghost.currentIndex;
     let frontier = [{ index: startIndex, path: [startIndex], direction: null }];
@@ -217,12 +215,12 @@ function bfsMove(ghost, goalIndex) {
     while (frontier.length > 0) {
         let currentNode = frontier.shift();
 
-        // If we reached the goal (Pac-Man), return the next move in the path
+        // If we reached Pac-Man, return the next move in the path
         if (currentNode.index === goalIndex) {
             // Return the next move in the path (or stay if no next move)
             const nextIndex = currentNode.path[1] || currentNode.index;
             const direction = currentNode.path.length > 1
-                ? currentNode.path[1] - currentNode.path[0] // Calculate direction based on the next move
+                ? currentNode.path[1] - currentNode.path[0] // Calculate direction based on the current location and next move
                 : null;
             return { index: nextIndex, direction: direction };
         }
@@ -243,28 +241,35 @@ function bfsMove(ghost, goalIndex) {
         }
     }
 
-    // If no valid path found, stay in place
     return { index: startIndex, direction: null };
 }
 
 function escapePacman(ghost, validMoves) {
-    // Calculate opposite direction
-    const oppositeDirection = -ghost.lastDirection;
-
     // Remove Pac-Man's position from valid moves
     validMoves = validMoves.filter(move => move.index !== pacmanCurrentIndex);
 
-    // Try the opposite direction first
-    let escapeMove = validMoves.find(move => move.direction === oppositeDirection);
-
-    // If opposite direction is not possible, pick a random valid move
-    if (!escapeMove && validMoves.length > 0) {
-        escapeMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+    // If no valid moves, stay in place
+    if (validMoves.length === 0) {
+        return { index: ghost.currentIndex, direction: null };
     }
 
-    // Return the move (or stay in place if no move is found)
-    return escapeMove || { index: ghost.currentIndex, direction: null };
+    // Function to calculate Manhattan distance from Pac-Man
+    function getDistance(index) {
+        const ghostX = index % width;
+        const ghostY = Math.floor(index / width);
+        const pacmanX = pacmanCurrentIndex % width;
+        const pacmanY = Math.floor(pacmanCurrentIndex / width);
+        return Math.abs(ghostX - pacmanX) + Math.abs(ghostY - pacmanY);
+    }
+
+    // Find the move that maximizes distance from Pac-Man
+    let escapeMove = validMoves.reduce((bestMove, move) => {
+        return getDistance(move.index) > getDistance(bestMove.index) ? move : bestMove;
+    });
+
+    return escapeMove;
 }
+
 
 export function resetGhosts() {
     console.log("resetGhosts() called!");
@@ -277,6 +282,9 @@ export function resetGhosts() {
         ghost.framesElapsed = 0;
         ghost.lastMoveTime = 0;
         ghost.lastDirection = null; 
-        ghost.wanderingTime = 0;
+        ghost.wanderingTime = 100;
+    });
+    ghosts.forEach(ghost => {
+        ghost.timerID = requestAnimationFrame((timestamp) => moveGhost(ghost, timestamp));  
     });
 }
