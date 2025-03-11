@@ -1,7 +1,7 @@
 import { squares, width } from './gameBoard.js';
 import { isPaused, frameTime } from './app.js';
 import { pacDotEaten, powerPelletEaten, scaredGhostEaten } from './scoring.js';
-import {  checkForWin, loseLife } from './gameState.js';
+import { checkForWin, loseLife } from './gameState.js';
 import { ghosts } from './ghosts.js';
 
 export let pacmanCurrentIndex = 490;
@@ -19,8 +19,6 @@ export function movePacman(data) {
     if (isPaused || !isMoving) return;
     const key = data.key;
 
-    // updatePacmanDirection(key);
-
     const nextIndex = getNextIndex(pacmanCurrentIndex, key)
     
     const ghostAtNextSquare = ghosts.find(ghost => ghost.currentIndex === nextIndex);
@@ -33,7 +31,6 @@ export function movePacman(data) {
         } else {
             loseLife();  // Pac-Man loses a life
             return; // Prevent Pac-Man from moving further until reset
-            
         }
     }
     
@@ -136,7 +133,7 @@ export function startMoving(e) {
     if (isPaused) return; 
     
     currentDirection = e.key; 
-    updatePacmanDirection(currentDirection);
+   updatePacmanDirection(currentDirection);
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp

@@ -1,15 +1,15 @@
 import { squares } from './gameBoard.js';
-import { pacmanCurrentIndex, startMoving, stopAllAnimations } from './pac-man.js';
+import { startMoving, stopAllAnimations, resetPacman } from './pac-man.js';
 import { score } from './scoring.js';
-import { endMenu, stopTimer, timer } from './app.js';
-import { ghosts, resetGhosts } from './ghosts.js';
-import { resetPacman } from './pac-man.js';
+import { endMenu, timer, stopTimer } from './app.js';
+import { resetGhosts } from './ghosts.js';
 
 const endMessage = document.getElementById('end-message');
 const finalScore = document.getElementById('final-score');
 const finalTime = document.getElementById('final-time');
 
 export let lives = 3;
+export let gameIsOver = false;
 
 
 function updateLives() {
@@ -31,16 +31,14 @@ export function loseLife() {
     }
 }
 
-
-
 function resetGameAfterLifeLost() {
     resetPacman();
     resetGhosts();
 }
 
-
 export function gameOver() {
     if (lives > 0) return;
+    gameIsOver = true
     stopAllAnimations();
     document.removeEventListener('keydown', startMoving);
     stopTimer();
@@ -55,9 +53,9 @@ export function gameOver() {
     endMenu.classList.remove('hidden');
 }
 
-
 export function checkForWin() {
     if (score >= 1000) {
+        gameIsOver = true;
         stopAllAnimations();
         document.removeEventListener('keydown', startMoving)
         stopTimer();
