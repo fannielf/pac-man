@@ -16,6 +16,7 @@ html, body {
 .grid div {
     width: 20px;
     height: 20px;
+    position: relative;
 }
 
 .wall {
@@ -31,6 +32,7 @@ html, body {
     border-radius: 50%;
     transition: opacity 0.2s linear;
     opacity: 1;
+    z-index: 1;
 }
 
 .power-pellet {
@@ -40,8 +42,14 @@ html, body {
 
 .ghost {
     background-size: cover;
+    background-color: white;
+    border: 0px;
     width: 20px;
     height: 20px;
+    border-radius: 0;
+    top: 0;
+    left: 0;
+    z-index: 2;
 }
 
 .blinky {
@@ -56,20 +64,10 @@ html, body {
 
 .inky {
     background-image: url('images/inky.webp');
-
 }
 
 .clyde {
     background-image: url('images/clyde.webp');
-}
-
-@keyframes eat {
-    0%, 100% { 
-        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); 
-    }
-    50% { 
-        clip-path: polygon(50% 0%, 100% 50%, 50% 30%, 0% 50%); 
-    }
 }
 
 .pac-man {

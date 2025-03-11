@@ -21,9 +21,11 @@ updateLives();
 export function loseLife() {
     if (lives > 0) {
         lives--;
+        console.log("Lives left:", lives);
         updateLives();
 
         if (lives <= 0) {
+            console.log("Calling gameOver()...");
             gameOver();
         } else {
             resetGameAfterLifeLost();
@@ -34,7 +36,9 @@ export function loseLife() {
 function resetGameAfterLifeLost() {
     resetPacman();
     resetGhosts();
+    
 }
+
 
 export function gameOver() {
     if (lives > 0) return;
@@ -42,6 +46,8 @@ export function gameOver() {
     stopAllAnimations();
     document.removeEventListener('keydown', startMoving);
     stopTimer();
+    document.getElementById('pause-menu').classList.add('hidden');
+
     squares.forEach(square => {
         square.classList.remove('pac-man', 'ghost', 'scared-ghost');
     });
@@ -59,6 +65,8 @@ export function checkForWin() {
         stopAllAnimations();
         document.removeEventListener('keydown', startMoving)
         stopTimer();
+        document.getElementById('pause-menu').classList.add('hidden');
+
         squares.forEach(square => {
             square.classList.remove('pac-man', 'ghost', 'scared-ghost');
         });

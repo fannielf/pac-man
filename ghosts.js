@@ -120,10 +120,11 @@ function moveGhost(ghost) {
             ghost.timerID = requestAnimationFrame(move);
             return;
         }
-
-    if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
-    const deltaTime = timestamp - ghost.lastMoveTime;
-    const moveStep = (deltaTime / frameTime) * ghost.speed;
+        
+        if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
+        const deltaTime = timestamp - ghost.lastMoveTime;
+        const moveStep = (deltaTime / frameTime) * ghost.speed;
+    
 
     // Check for ghost collision with Pac-Man
     if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {

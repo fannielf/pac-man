@@ -1,5 +1,4 @@
 import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
-import { startTimer, stopTimer } from './gameState.js';
 
 export let isPaused = false;
 const targetFPS = 60;
@@ -14,6 +13,7 @@ const playAgainButton = document.getElementById('play-again-button');
 document.addEventListener('DOMContentLoaded', function() {
 
     startTimer()
+    
     
 //creating the event listeners
 document.addEventListener('keyup', function(e) {
