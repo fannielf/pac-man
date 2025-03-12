@@ -96,32 +96,32 @@ export function stopTimer() {
     isTimerRunning = false;
 }
 
-let lastTime = performance.now();
-let frameCount = 0;
-let fps = 0;
+// let lastTime = performance.now();
+// let frameCount = 0;
+// let fps = 0;
 
-const fpsDisplay = document.createElement("div");
-fpsDisplay.style.position = "fixed";
-fpsDisplay.style.top = "10px";
-fpsDisplay.style.left = "10px";
-fpsDisplay.style.backgroundColor = "black";
-fpsDisplay.style.color = "white";
-fpsDisplay.style.padding = "5px";
-fpsDisplay.style.fontSize = "14px";
-document.body.appendChild(fpsDisplay);
+// const fpsDisplay = document.createElement("div");
+// fpsDisplay.style.position = "fixed";
+// fpsDisplay.style.top = "10px";
+// fpsDisplay.style.left = "10px";
+// fpsDisplay.style.backgroundColor = "black";
+// fpsDisplay.style.color = "white";
+// fpsDisplay.style.padding = "5px";
+// fpsDisplay.style.fontSize = "14px";
+// document.body.appendChild(fpsDisplay);
 
-function updateFPS() {
-    const now = performance.now();
-    frameCount++;
+// function updateFPS() {
+//     const now = performance.now();
+//     frameCount++;
 
-    if (now - lastTime >= 1000) {
-        fps = frameCount;
-        frameCount = 0;
-        lastTime = now;
-        fpsDisplay.innerText = `FPS: ${fps}`;
-    }
+//     if (now - lastTime >= 1000) {
+//         fps = frameCount;
+//         frameCount = 0;
+//         lastTime = now;
+//         fpsDisplay.innerText = `FPS: ${fps}`;
+//     }
 
-    requestAnimationFrame(updateFPS);
-}
+//     requestAnimationFrame(updateFPS);
+// }
 
-updateFPS();
+// updateFPS();

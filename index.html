@@ -10,31 +10,30 @@
         <script src="scoring.js" type="module"></script>
         <script src="gameState.js" type="module"></script>
         <script src="app.js" type="module"></script>
-        <link rel="icon" type="image/png" href="/images/pacman.png">
+        <link rel="icon" type="image/png" href="/images/pacman-right.png">
     </head>
     <body>
-        <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="game-info">
+                <h3>Score:<span id="score"></span></h3>
+                <div id="timer">Time: 0s</div>
+                <div id="lives">Lives:</div>
+            </div>
 
-        <div class="game-info">
-        <h3>Score:<span id="score"></span></h3>
-        <div id="timer">Time: 0s</div>
-        <div id="lives">Lives:</div>
-        </div>
-
-        <div id="pause-menu" class="hidden">
-            <h1>Paused</h1>
-            <p>Press Space to Resume</p>
-            <p>Press R to Restart</p>
-            <button id="resume-button">Resume</button>
-            <button id="restart-button">Restart</button>
-        </div>
-        
-        <div id="end-menu" class="hidden">
-            <h1 id="end-message"></h1>
-            <p>Score: <span id ="final-score"></span></p>
-            <p>Time: <span id="final-time"></span></p>
-            <button id="play-again-button">Play Again</button>
-        </div>
+            <div id="pause-menu" class="hidden">
+                <h1>Paused</h1>
+                <p>Press Space to Resume</p>
+                <p>Press R to Restart</p>
+                <button id="resume-button">Resume</button>
+                <button id="restart-button">Restart</button>
+            </div>
+            
+            <div id="end-menu" class="hidden">
+                <h1 id="end-message"></h1>
+                <p>Score: <span id ="final-score"></span></p>
+                <p>Time: <span id="final-time"></span></p>
+                <button id="play-again-button">Play Again</button>
+            </div>
 
     </body>
     </html>
