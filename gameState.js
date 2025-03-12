@@ -21,11 +21,9 @@ updateLives();
 export function loseLife() {
     if (lives > 0) {
         lives--;
-        console.log("Lives left:", lives);
         updateLives();
 
         if (lives <= 0) {
-            console.log("Calling gameOver()...");
             gameOver();
         } else {
             resetGameAfterLifeLost();
@@ -88,6 +86,5 @@ function boardEmpty() {
             break;
         }
     }
-    console.log(isEmpty)
     return isEmpty
 }

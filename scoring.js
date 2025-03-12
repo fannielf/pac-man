@@ -43,14 +43,14 @@ function unScareGhosts() {
     points = 100;
 }
 
-
 export function scaredGhostEaten(ghost) {
     if (ghost.currentIndex === pacmanCurrentIndex  && ghost.isScared) {
         squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
             ghost.currentIndex = ghost.startIndex;
             ghost.isScared = false;
             ghost.wanderingTime = 0;
-            ghost.exitDelay = 1;
+            ghost.timeElapsed = 0;
+            ghost.exitDelay = 2;
             points = points * 2;
             score += points;
             scoreDisplay.innerHTML = score;

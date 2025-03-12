@@ -29,13 +29,13 @@ export const ghosts = [
 
 const directions = [-1, 1, width, -width]; // left, right, up, down
 
-// Initialize all ghosts at the start of the game
+// Initialize all ghosts and begin with escaping the ghost-lair
 ghosts.forEach(ghost => {
     squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
     escapeLair(ghost); 
 });
 
-// Simple function to get the valid neighboring squares
+// Simple function to get the valid neighboring tiles
 function getValidNeighbors(index) {
     const neighbors = [];
     directions.forEach(direction => {
@@ -56,7 +56,6 @@ function getValidNeighbors(index) {
     }
 
     if (index === 391) {
-        // Only allow movement to 363 if no other ghost is already in 363
         if (!squares[364].classList.contains('ghost')) {
             neighbors.push({ index: 364, direction: -1 });
         }
@@ -69,7 +68,7 @@ function escapeLair(ghost) {
     function move(timestamp) {
         if (gameIsOver) return
 
-        if (isPaused) {
+        if (isPaused) { // if paused, skip the move
             ghost.timerID = requestAnimationFrame(move);
             return;
         }
@@ -80,7 +79,8 @@ function escapeLair(ghost) {
 
         if (ghost.timeElapsed < ghost.exitDelay) {
             ghost.timeElapsed += deltaTime/1000;
-            ghost.lastMoveTime = timestamp;  // Update timestamp here
+            ghost.lastMoveTime = timestamp;
+
         } else  if (squares[ghost.currentIndex].classList.contains('ghost-lair')){
             if (moveStep >= 1) {
                 ghost.lastMoveTime = timestamp;
@@ -110,7 +110,6 @@ function moveGhost(ghost) {
     function move(timestamp) {
         if (gameIsOver) return;
 
-        // If paused, skip the move
         if (isPaused) {
             ghost.timerID = requestAnimationFrame(move);
             return;
@@ -123,39 +122,36 @@ function moveGhost(ghost) {
         
         // Check for ghost collision with Pac-Man
         if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
-            // Pac-Man is caught by a ghost, so lose a life
             loseLife();
             return;
         }
         
         if (scaredGhostEaten(ghost)) {
             escapeLair(ghost);
-            return; // Skip current movement logic, restart from the beginning
+            return;
         }
-        
         
         if (moveStep >= 1) {
             const bestMove = ghostAI(ghost, deltaTime);
             ghost.lastMoveTime = timestamp;
 
             if (bestMove && bestMove.index !== undefined && bestMove.direction !== undefined) {
-            // Can move if the next index is not a wall nor have another ghost in it
+            // Can move if the ghost is not staying put
             if (
                 ghost.currentIndex !== bestMove.index
             ) {
                 squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
-                ghost.currentIndex = bestMove.index; // Update to bestMove directly
+                ghost.currentIndex = bestMove.index;
                 ghost.lastDirection = bestMove.direction;
                 squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
             } else {
-                ghost.lastDirection = null; // Reset last direction if no valid move is found
+                ghost.lastDirection = null; // Reset last direction if the ghost is not moving
             }
 
             if (ghost.isScared) squares[ghost.currentIndex].classList.add('scared-ghost');
             }
         }
 
-        // Recursively call move function for the next frame
         ghost.timerID = requestAnimationFrame(move);
     }
     ghost.timerID = requestAnimationFrame(move);
@@ -163,27 +159,31 @@ function moveGhost(ghost) {
 
 // Ghost AI that switches between different movement patterns
 function ghostAI(ghost, deltaTime) {
-    // Increase wandering time
+    // Increase wandering time in seconds
     ghost.wanderingTime += deltaTime/1000;
 
     const validNeighbors = getValidNeighbors(ghost.currentIndex);
 
     if (validNeighbors.length === 0) {
         return { index: ghost.currentIndex, direction: null };
+
     } else if (ghost.isScared) {
         return escapePacman(ghost, validNeighbors);
+
     } else if (ghost.wanderingTime <= 3) { 
         return randomMove(ghost.lastDirection, validNeighbors);
+
     } else {
         return bfsMove(ghost.currentIndex, pacmanCurrentIndex);
     }
 }
 
+// when scared, ghosts trying to get as far from pac-man as possible
 function escapePacman(ghost, validMoves) {
     // Remove Pac-Man's position from valid moves
     validMoves = validMoves.filter(move => move.index !== pacmanCurrentIndex);
 
-    // If no valid moves, stay in place
+    // If no other moves than moving to pac-man, stay in place
     if (validMoves.length === 0) {
         return { index: ghost.currentIndex, direction: null };
     }
@@ -225,9 +225,9 @@ function escapePacman(ghost, validMoves) {
     return bestMove;
 }
 
-// Random wandering in the beginning
+// Random wandering around the game board
 function randomMove(ghostDirection, validNeighbors) {
-    if (Object.keys(validNeighbors).length > 1) {
+    if (Object.keys(validNeighbors).length > 1) { // if there are more than one option, remove the opposite direction
         const oppositeDirection = -ghostDirection;
         validNeighbors = validNeighbors.filter(move => move.direction !== oppositeDirection);
     }
@@ -256,7 +256,7 @@ function bfsMove(startIndex, goalIndex) {
         }
 
         explored.add(currentNode.index);
-        let neighbors = getValidNeighbors(currentNode.index, currentNode.direction);
+        let neighbors = getValidNeighbors(currentNode.index);
 
         // Explore the neighbors and add them to the frontier
         for (let neighbor of neighbors) {
@@ -285,6 +285,7 @@ export function resetGhosts() {
         ghost.lastMoveTime = 0;
         ghost.lastDirection = null; 
         ghost.wanderingTime = 0;
+        ghost.exitDelay = 2;
         escapeLair(ghost);
     });
 }
