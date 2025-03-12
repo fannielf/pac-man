@@ -1,4 +1,4 @@
-import { squares } from './gameBoard.js';
+import { squares, layout, width } from './gameBoard.js';
 import { startMoving, stopAllAnimations, resetPacman } from './pac-man.js';
 import { score } from './scoring.js';
 import { endMenu, timer, stopTimer } from './app.js';
@@ -60,7 +60,7 @@ export function gameOver() {
 }
 
 export function checkForWin() {
-    if (score >= 1000) {
+    if (boardEmpty()) {
         gameIsOver = true;
         stopAllAnimations();
         document.removeEventListener('keydown', startMoving)
@@ -77,4 +77,17 @@ export function checkForWin() {
         finalTime.innerHTML = `${minutes}m ${seconds}s`;
         endMenu.classList.remove('hidden');
     }
+}
+
+function boardEmpty() {
+    let isEmpty = true;
+
+    for (let i = 0; i < layout.length * width; i ++) {
+        if (squares[i].classList.contains('pac-dot') || squares[i].classList.contains('pac-pellet')) {
+            isEmpty = false;
+            break;
+        }
+    }
+    console.log(isEmpty)
+    return isEmpty
 }
