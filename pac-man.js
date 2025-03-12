@@ -34,7 +34,10 @@ export function movePacman(data) {
         }
     }
     
-    squares[pacmanCurrentIndex].classList.remove('pac-man');
+    document.querySelectorAll('.pac-man').forEach(square => {
+        square.classList.remove('pac-man');
+        square.style.backgroundImage = '';
+    });
     pacmanCurrentIndex = nextIndex
     squares[pacmanCurrentIndex].classList.add('pac-man');
 
@@ -94,24 +97,25 @@ function getNextIndex(currentIndex, key) {
 }
 
 function updatePacmanDirection(direction) {
-    const pacmanImage = document.querySelector('.pac-man'); 
-    if (!pacmanImage) return;
+    const pacman = squares[pacmanCurrentIndex]; 
+    if (!pacman) return;
 
     switch (direction) {
         case 'ArrowLeft':
-            pacmanImage.style.transform = 'scaleX(-1)';
+            pacman.style.backgroundImage = "url('images/pacman-left.png')";
             break;
         case 'ArrowRight':
-            pacmanImage.style.transform = 'scaleX(1)';
+            pacman.style.backgroundImage = "url('images/pacman-right.png')";
             break;
         case 'ArrowUp':
-            pacmanImage.style.transform = 'rotate(-90deg)';
+            pacman.style.backgroundImage = "url('images/pacman-up.png')";
             break;
         case 'ArrowDown':
-            pacmanImage.style.transform = 'rotate(90deg)';
+            pacman.style.backgroundImage = "url('images/pacman-down.png')";
             break;
     }
 }
+
 
 export function movePacmanSmoothly(timestamp) {
     if (!isMoving || isPaused) return; 
@@ -133,7 +137,7 @@ export function startMoving(e) {
     if (isPaused) return; 
     
     currentDirection = e.key; 
-   updatePacmanDirection(currentDirection);
+    updatePacmanDirection(currentDirection);
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp
@@ -156,8 +160,10 @@ export function stopAllAnimations() {
 }
 
 export function resetPacman() {
-    squares[pacmanCurrentIndex].classList.remove('pac-man');
-    pacmanCurrentIndex = 490;
+    document.querySelectorAll('.pac-man').forEach(square => {
+        square.classList.remove('pac-man');
+        square.style.backgroundImage = '';
+    });    pacmanCurrentIndex = 490;
     squares[pacmanCurrentIndex].classList.add('pac-man');
     isMoving = false;
     lastMoveTime = 0;
