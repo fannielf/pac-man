@@ -85,6 +85,14 @@ html, body {
     width: 20px;
     height: 20px;
     filter: hue-rotate(480deg) saturate(300%);
+    animation: blink 0.3s infinite;
+    /* animation-delay: 6s; */
+}
+
+@keyframes blink {
+    0% { opacity: 0.5; }
+    50% { opacity: 0; }
+    75% { opacity: 0.5; }
 }
 
 .game-info {
