@@ -50,7 +50,7 @@ export function scaredGhostEaten(ghost) {
             ghost.currentIndex = ghost.startIndex;
             ghost.isScared = false;
             ghost.wanderingTime = 0;
-            ghost.exitDelay = 50;
+            ghost.exitDelay = 1;
             points = points * 2;
             score += points;
             scoreDisplay.innerHTML = score;
