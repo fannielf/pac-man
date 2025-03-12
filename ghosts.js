@@ -14,17 +14,17 @@ class Ghost {
         this.isScared = false;
         this.timerID = null;
         this.exitDelay = exitDelay;
-        this.framesElapsed = 0;
+        this.timeElapsed = 0;
         this.lastMoveTime = 0;
         this.wanderingTime = 0;
     }
 }
 
 export const ghosts = [
-    new Ghost('blinky', 377, 0.1, 0),
-    new Ghost('pinky', 378, 0.08, 150),
-    new Ghost('inky', 405, 0.07, 180),
-    new Ghost('clyde', 406, 0.06, 200),
+    new Ghost('blinky', 377, 0.08, 1), 
+    new Ghost('pinky', 378, 0.07, 2.5),
+    new Ghost('inky', 405, 0.06, 3),
+    new Ghost('clyde', 406, 0.05, 3.5),
 ];
 
 const directions = [-1, 1, width, -width]; // left, right, up, down
@@ -64,12 +64,7 @@ function getValidNeighbors(index) {
     return neighbors;
 }
 
-function inTunnel(index) {
-    return (index <= 363 && index >= 358) || (index <= 391 && index >= 386);
-}
-
 function escapeLair(ghost) {
-
 
     function move(timestamp) {
         if (gameIsOver) return
@@ -81,10 +76,11 @@ function escapeLair(ghost) {
 
         if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
         const deltaTime = timestamp - ghost.lastMoveTime;
-        const moveStep = (deltaTime / frameTime) * ghost.speed;
+        const moveStep = (deltaTime * ghost.speed) / frameTime ;
 
-        if (ghost.framesElapsed < ghost.exitDelay) {
-            ghost.framesElapsed++;
+        if (ghost.timeElapsed < ghost.exitDelay) {
+            ghost.timeElapsed += deltaTime/1000;
+            ghost.lastMoveTime = timestamp;  // Update timestamp here
         } else  if (squares[ghost.currentIndex].classList.contains('ghost-lair')){
             if (moveStep >= 1) {
                 ghost.lastMoveTime = timestamp;
@@ -112,9 +108,8 @@ function escapeLair(ghost) {
 function moveGhost(ghost) {
 
     function move(timestamp) {
-        if (gameIsOver) {
-            return;
-        }
+        if (gameIsOver) return;
+
         // If paused, skip the move
         if (isPaused) {
             ghost.timerID = requestAnimationFrame(move);
@@ -124,26 +119,26 @@ function moveGhost(ghost) {
         if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
         const deltaTime = timestamp - ghost.lastMoveTime;
         const moveStep = (deltaTime / frameTime) * ghost.speed;
-    
-
-    // Check for ghost collision with Pac-Man
-    if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
-        // Pac-Man is caught by a ghost, so lose a life
-        loseLife();
-        return;
-    }
-
+        
+        
+        // Check for ghost collision with Pac-Man
+        if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
+            // Pac-Man is caught by a ghost, so lose a life
+            loseLife();
+            return;
+        }
+        
         if (scaredGhostEaten(ghost)) {
             escapeLair(ghost);
             return; // Skip current movement logic, restart from the beginning
         }
-
-        const bestMove = ghostAI(ghost);
-
+        
+        
         if (moveStep >= 1) {
+            const bestMove = ghostAI(ghost, deltaTime);
             ghost.lastMoveTime = timestamp;
 
-
+            if (bestMove && bestMove.index !== undefined && bestMove.direction !== undefined) {
             // Can move if the next index is not a wall nor have another ghost in it
             if (
                 ghost.currentIndex !== bestMove.index
@@ -157,6 +152,7 @@ function moveGhost(ghost) {
             }
 
             if (ghost.isScared) squares[ghost.currentIndex].classList.add('scared-ghost');
+            }
         }
 
         // Recursively call move function for the next frame
@@ -166,23 +162,18 @@ function moveGhost(ghost) {
 }
 
 // Ghost AI that switches between different movement patterns
-function ghostAI(ghost) {
+function ghostAI(ghost, deltaTime) {
     // Increase wandering time
-    ghost.wanderingTime++;
+    ghost.wanderingTime += deltaTime/1000;
 
     const validNeighbors = getValidNeighbors(ghost.currentIndex);
-    if (validNeighbors.length > 1 && inTunnel(pacmanCurrentIndex) && inTunnel(ghost.currentIndex)) {
-        validNeighbors = validNeighbors.filter(neighbor => (neighbor.index === 364 || neighbor.index === 391));
-    }
 
     if (validNeighbors.length === 0) {
         return { index: ghost.currentIndex, direction: null };
     } else if (ghost.isScared) {
         return escapePacman(ghost, validNeighbors);
-    } else if (ghost.wanderingTime < 150) {  // Wandering 2sec with the rate of 60FPS
+    } else if (ghost.wanderingTime <= 3) { 
         return randomMove(ghost.lastDirection, validNeighbors);
-    } else if (ghost.className === 'inky' || ghost.className === 'clyde') {
-        return dfsMove(ghost.currentIndex, pacmanCurrentIndex);
     } else {
         return bfsMove(ghost.currentIndex, pacmanCurrentIndex);
     }
@@ -242,35 +233,7 @@ function randomMove(ghostDirection, validNeighbors) {
     }
     
     const randomMove = validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
-    return { index: randomMove.index, direction: randomMove.direction };
-}
-
-// Depth-First-Search algorithm to pathfinding towards Pac-Man
-function dfsMove(startIndex, goalIndex) {
-    let stack = [{ index: startIndex, path: [startIndex], direction: null }];
-    let explored = new Set();
-
-    while (stack.length > 0) {
-        let currentNode = stack.pop();
-        if (explored.has(currentNode.index)) continue;
-        explored.add(currentNode.index);
-
-        // If we've reached the goal, return the next move in the path
-        if (currentNode.index === goalIndex) {
-            return { index: currentNode.path[1] || currentNode.index, direction: currentNode.path[1] - currentNode.path[0] };
-        }
-
-        // Add neighbors to the stack
-        let neighbors = getValidNeighbors(currentNode.index, currentNode.direction);
-        for (let neighbor of neighbors) {
-            if (!explored.has(neighbor.index)) {
-                let newPath = [...currentNode.path, neighbor.index];
-                stack.push({ index: neighbor.index, path: newPath, direction: neighbor.direction });
-            }
-        }
-    }
-
-    return { index: startIndex, direction: null };
+    return randomMove;
 }
 
 // Breath-First-Search algorithm to find the shortest path to Pac-Man
@@ -318,10 +281,10 @@ export function resetGhosts() {
         ghost.currentIndex = ghost.startIndex;
         squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
         ghost.isScared = false;
-        ghost.framesElapsed = 0;
+        ghost.timeElapsed = 0;
         ghost.lastMoveTime = 0;
         ghost.lastDirection = null; 
-        ghost.wanderingTime = 150;
+        ghost.wanderingTime = 0;
         escapeLair(ghost);
     });
 }
