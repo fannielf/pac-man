@@ -143,7 +143,7 @@ function moveGhost(ghost) {
             if (
                 ghost.currentIndex !== bestMove.index
             ) {
-                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost', 'blinking-ghost');
                 ghost.currentIndex = bestMove.index; // Update to bestMove directly
                 ghost.lastDirection = bestMove.direction;
                 squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
@@ -277,7 +277,7 @@ function bfsMove(startIndex, goalIndex) {
 export function resetGhosts() {
     ghosts.forEach(ghost => {
         cancelAnimationFrame(ghost.timerID);
-        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');  
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost', 'blinking-ghost');  
         ghost.currentIndex = ghost.startIndex;
         squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
         ghost.isScared = false;

@@ -23,12 +23,24 @@ export function powerPelletEaten() {
     if (squares[pacmanCurrentIndex].classList.contains('power-pellet')) {
         score += 10;
         scoreDisplay.innerHTML = score;
-        ghosts.forEach(ghost => ghost.isScared = true);
+        ghosts.forEach(ghost => {
+            if (!ghost.isScared) {
+
+                ghost.isScared = true;             
+            }
+        });
         scareEndTime = performance.now() + 10000;
+        
+        
         function checkUnscare(time) {
             if (time >= scareEndTime) {
                 unScareGhosts();
             } else {
+                if (scareEndTime - time <= 3000) {
+                    ghosts.forEach(ghost => {
+                        squares[ghost.currentIndex].classList.add('blinking-ghost');
+                    });
+                }
                 requestAnimationFrame(checkUnscare);
             }
         }
@@ -37,16 +49,24 @@ export function powerPelletEaten() {
         checkForWin()
     }
 }
+    function unScareGhosts() {
+        ghosts.forEach(ghost => {
+    
+            squares[ghost.currentIndex].classList.remove('scared-ghost', 'blinking-ghost');
+            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+    
+            delete squares[ghost.currentIndex].dataset.scared;
 
-function unScareGhosts() {
-    ghosts.forEach(ghost => ghost.isScared = false);
-    points = 100;
-}
+            ghost.isScared = false;
+        });
+    
+        points = 100;
+    }
 
 
 export function scaredGhostEaten(ghost) {
     if (ghost.currentIndex === pacmanCurrentIndex  && ghost.isScared) {
-        squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost');
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost', 'blinking-ghost');
             ghost.currentIndex = ghost.startIndex;
             ghost.isScared = false;
             ghost.wanderingTime = 0;

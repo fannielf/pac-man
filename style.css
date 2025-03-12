@@ -85,8 +85,12 @@ html, body {
     width: 20px;
     height: 20px;
     filter: hue-rotate(480deg) saturate(300%);
+    /* animation: blink 0.3s infinite;
+    animation-delay: 6s; */
+}
+
+.blinking-ghost {
     animation: blink 0.3s infinite;
-    /* animation-delay: 6s; */
 }
 
 @keyframes blink {
