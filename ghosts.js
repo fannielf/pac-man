@@ -137,9 +137,8 @@ function moveGhost(ghost) {
 
             if (bestMove && bestMove.index !== undefined && bestMove.direction !== undefined) {
             // Can move if the ghost is not staying put
-            if (
-                ghost.currentIndex !== bestMove.index
-            ) {
+            if (ghost.currentIndex !== bestMove.index) {
+
                 squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost');
                 ghost.currentIndex = bestMove.index;
                 ghost.lastDirection = bestMove.direction;
@@ -270,7 +269,6 @@ function bfsMove(startIndex, goalIndex) {
             });
         }
     }
-
     return { index: startIndex, direction: null };
 }
 
@@ -286,6 +284,7 @@ export function resetGhosts() {
         ghost.lastDirection = null; 
         ghost.wanderingTime = 0;
         ghost.exitDelay = 2;
+        ghost.speed += 0.01
         escapeLair(ghost);
     });
 }

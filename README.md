@@ -1,2 +1,2 @@
-# pac-man
-make-your-game project
+# JavaScript Game Project: Pac-man
+
