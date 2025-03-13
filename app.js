@@ -1,6 +1,6 @@
 import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
 import { gameIsOver } from './gameState.js';
-import { scareTimerId } from './scoring.js';
+import { scareTimerId, checkUnscare } from './scoring.js';
 import { ghosts } from './ghosts.js';
 
 export let isPaused = false;
