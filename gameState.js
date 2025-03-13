@@ -34,7 +34,6 @@ export function loseLife() {
 function resetGameAfterLifeLost() {
     resetPacman();
     resetGhosts();
-    
 }
 
 
