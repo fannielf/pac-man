@@ -12,28 +12,43 @@
         <script src="app.js" type="module"></script>
         <link rel="icon" type="image/png" href="/images/pacman-right.png">
     </head>
+    <header>
+    </header>
     <body>
         <div class="grid"></div>
         <div class="game-info">
-        <h3>Score:<span id="score"></span></h3>
+        <h3>Score: <span id="score"></span></h3>
         <div id="timer">Time: 0s</div>
         <div id="lives">Lives:</div>
         </div>
 
+        <div id="information" class="hidden">
+
+            <h1>HOW TO PLAY:</h1>
+            <p>Use the arrow keys</p>  
+            
+        </div>
+
         <div id="pause-menu" class="hidden">
-            <h1>Paused</h1>
+            <h1>PAUSED</h1>
             <p>Press Space to Resume</p>
             <p>Press R to Restart</p>
-            <button id="resume-button">Resume</button>
-            <button id="restart-button">Restart</button>
+            <button id="resume-button">RESUME</button>
+            <button id="restart-button">RESTART</button>
         </div>
         
         <div id="end-menu" class="hidden">
             <h1 id="end-message"></h1>
             <p>Score: <span id ="final-score"></span></p>
             <p>Time: <span id="final-time"></span></p>
-            <button id="play-again-button">Play Again</button>
+            <button id="play-again-button">PLAY AGAIN</button>
         </div>
 
     </body>
+
+    <footer>
+        <p>&copy; 2025 Fanni Vesanen & Maris Karu. All rights reserved.
+    </p>
+    </footer>
+
     </html>
