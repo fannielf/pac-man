@@ -160,12 +160,13 @@ h3, #timer, #lives {
 
 header {
     background-image: url('images/title.png');
-    background-size: cover;
+    background-size:contain;
     background-position: center; 
     background-repeat: no-repeat;
     height: 200px; 
     width: 100%;
-    margin-top: -70px;
+    margin-top: -60px;
+    margin-bottom: 0px;
     
 }
 
@@ -184,12 +185,41 @@ footer {
     left: 0;
     width: 25%;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5); 
     display: flex;
-    justify-content:left;
-    padding-left: 10px;
-    align-items: top;
+    flex-direction: column;
+    text-align: left;
+    justify-content: center;
+    padding: 10px;
+    padding-bottom: 90px;
     z-index: 1000;
+    border: 1px solid black;
+}
+
+#info-menu ul {
+    font-family:'Times New Roman', Times, serif;
+
+}
+
+#info-menu li {
+    margin-bottom: 10px;
+    font-size: 16px;;
+
+}
+
+#info-menu h2 {
+    font-size: 20px;
+    margin-bottom: 0px;
+}
+
+#info-menu p {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.instructions {
+    margin-top: 0px;
+    margin-bottom: 10px;
+
 }
 
 

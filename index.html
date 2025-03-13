@@ -15,6 +15,7 @@
     <header>
     </header>
     <body>
+        <div class="instructions"> Press "i" for instructions</div>
         <div class="grid"></div>
         <div class="game-info">
         <h3>Score: <span id="score"></span></h3>
@@ -24,30 +25,26 @@
 
         <div id="info-menu" class="hidden">
 
-            <h1>HOW TO PLAY:</h1>
-            <ul>
-                <li>Use the arrow keys to control Pac-man</li>
-                <li>Keep the key down for smooth movement</li>
-                <li>Ghosts are wandering around a while and then start chasing Pac-man</li>
-                <li>If Pac-man eats a power-pellet, ghosts become "scared" for 10 seconds</li>
-                <li>Scared ghosts will blink the last 3 seconds before returning to normal</li>
-                <li>Pac-man has to clear the whole gameboard from dots and pellets to win the game</li>
-                <li>If you run out of lives, game over</li>
-            </ul>
+            <h2>HOW TO PLAY:</h2>
+                <p>Use the arrow keys to control Pac-man</p>
+                <p>Keep the key down for smooth movement</p>
+                <p>Ghosts are wandering around a while and then start chasing Pac-man</p>
+                <p>If Pac-man eats a power-pellet, ghosts become "scared" for 10 seconds</p>
+                <p>Scared ghosts will blink the last 3 seconds before returning to normal</p>
+                <p>Pac-man has to clear the whole gameboard from dots and pellets to win the game</p>
+                <p>If you run out of lives, game over</p>
             <br>
-            <h1>SCORING:</h1>  
-            <ul>
-                <li>1 point for pac-dot</li>
-                <li>10 points for power-pellet</li>
-                <li>Doubling points for scared ghosts eaten within 10 seconds:</li>
-                <ul style="list-style: none; padding-left: 1em;">
-                    <li>- 200 points for the first scared ghost eaten</li>
-                    <li>- 400 for the second</li>
-                    <li>- 800 for the third</li>
-                    <li>- 1600 for the fourth</li>
+            <h2>SCORING:</h2>  
+                <p><strong>1 point </strong>for pac-dot</p>
+                <p><strong>10 points </strong>for power-pellet</p>
+                <p>Doubling points for scared ghosts eaten within 10 seconds:</p>
+                <ul>
+                    <li><strong>200 points </strong>for the first scared ghost eaten</li>
+                    <li><strong>400 points </strong>for the second</li>
+                    <li><strong>800 points </strong>for the third</li>
+                    <li><strong>1600 points </strong>for the fourth</li>
                 </ul>
-                <li><strong>NOTE:</strong> The points for scared ghosts reset to 200 when a power-pellet is eaten.</li>
-            </ul>
+                <p><strong>NOTE:</strong> The points for scared ghosts reset to 200 when a power-pellet is eaten.</p>
         </div>
 
         <div id="pause-menu" class="hidden">
