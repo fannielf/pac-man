@@ -3,7 +3,7 @@ import { gameIsOver } from './gameState.js';
 
 export let isPaused = false;
 const targetFPS = 60;
-export const frameTime = 1000 / targetFPS;
+export const frameTime = 800 / targetFPS;
     
 export const endMenu = document.getElementById('end-menu');
 const pauseMenu = document.getElementById('pause-menu');

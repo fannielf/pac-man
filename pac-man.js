@@ -11,7 +11,6 @@ export let isMoving = false;
 let lastTimestamp = 0;
 let currentDirection = null;
 const speed = 0.4;
-let lastMoveTime = 0;
 
 let animationFrameId; 
 
@@ -166,6 +165,5 @@ export function resetPacman() {
     });    pacmanCurrentIndex = 490;
     squares[pacmanCurrentIndex].classList.add('pac-man');
     isMoving = false;
-    lastMoveTime = 0;
     currentDirection = null;
 }
