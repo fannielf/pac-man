@@ -77,6 +77,7 @@ export function togglePause() {
         cancelAnimationFrame(scareTimerId); // Stop scare timer
     } else {
         pauseMenu.classList.add('hidden');
+        startTimer();
         if (isMoving) {
             requestAnimationFrame(movePacmanSmoothly);
         }
@@ -93,7 +94,6 @@ let isTimerRunning = false;
 export function startTimer() {
     if (isTimerRunning) return;
 
-    timer = 0;
     isTimerRunning = true;
     updateTimerDisplay();
 
