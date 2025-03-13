@@ -36,36 +36,37 @@ export function powerPelletEaten() {
             }
         });
         scareEndTime = performance.now() + 10000;
-        
-        
-        function checkUnscare(time) {
-            if (time >= scareEndTime) {
-                cancelAnimationFrame(scareTimerId);
-                unScareGhosts(); 
-            } else {
-                if (scareEndTime - time <= 3000) {
-                    ghosts.forEach(ghost => {
-                        if (ghost.isScared) {
-                        squares[ghost.currentIndex].classList.add('blinking-ghost');
-                    }
-                    });
-            }
-            scareTimerId = requestAnimationFrame(checkUnscare);
-        }
-        }
         scareTimerId = requestAnimationFrame(checkUnscare);
         squares[pacmanCurrentIndex].classList.remove('power-pellet');
         checkForWin()
     }
 }
-    function unScareGhosts() {
-        ghosts.forEach(ghost => {
-            squares[ghost.currentIndex].classList.remove('scared-ghost', 'blinking-ghost');
-            ghost.isScared = false;
-        });
-    
-        points = 100;
+
+export function checkUnscare(time) {
+    if (time >= scareEndTime) {
+        cancelAnimationFrame(scareTimerId);
+        unScareGhosts(); 
+    } else {
+        if (scareEndTime - time <= 3000) {
+            ghosts.forEach(ghost => {
+                if (ghost.isScared) {
+                squares[ghost.currentIndex].classList.add('blinking-ghost');
+            }
+            });
     }
+    scareTimerId = requestAnimationFrame(checkUnscare);
+    }
+}
+
+function unScareGhosts() {
+    ghosts.forEach(ghost => {
+        squares[ghost.currentIndex].classList.remove('scared-ghost', 'blinking-ghost');
+        ghost.isScared = false;
+    });
+
+    points = 100;
+}
+
 
 export function scaredGhostEaten(ghost) {
     if (ghost.currentIndex === pacmanCurrentIndex  && ghost.isScared) {
