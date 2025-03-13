@@ -154,9 +154,6 @@ h3, #timer, #lives {
     background-color: #45a049;
 }
 
-.hidden {
-    display: none;
-}
 
 header {
     background-image: url('images/title.png');
@@ -217,4 +214,6 @@ footer {
 
 }
 
-
+.hidden {
+    display: none !important;
+}
