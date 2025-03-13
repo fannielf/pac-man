@@ -1,5 +1,6 @@
 import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
 import { gameIsOver } from './gameState.js';
+import { scareTimerId } from './scoring.js';
 
 export let isPaused = false;
 const targetFPS = 60;
@@ -14,7 +15,6 @@ const playAgainButton = document.getElementById('play-again-button');
 document.addEventListener('DOMContentLoaded', function() {
 
     startTimer()
-    
     
 //creating the event listeners
 document.addEventListener('keyup', function(e) {
@@ -35,39 +35,41 @@ document.addEventListener('keyup', function(e) {
         stopMoving();    }
     });
 
-document.addEventListener('keydown', startMoving);
+    document.addEventListener('keydown', startMoving);
 
-resumeButton.addEventListener('click', function() {
-    if (isPaused) {
-        togglePause();
-    }
-});
-restartButton.addEventListener('click', function() {
-    location.reload();
-});
+    resumeButton.addEventListener('click', function() {
+        if (isPaused) {
+            togglePause();
+        }
+    });
+    restartButton.addEventListener('click', function() {
+        location.reload();
+    });
 
-playAgainButton.addEventListener('click', function() {
-    location.reload();
-});
-
+    playAgainButton.addEventListener('click', function() {
+        location.reload();
+    });
 
 })
 
 //pausing the game
 export function togglePause() {
-    if (gameIsOver) return;
+   if (gameIsOver) return;
     isPaused = !isPaused;
     if (isPaused) {
         stopTimer();
         pauseMenu.classList.remove('hidden');
+        cancelAnimationFrame(scareTimerId); // Stop scare timer
     } else {
         pauseMenu.classList.add('hidden');
         if (isMoving) {
             requestAnimationFrame(movePacmanSmoothly);
         }
+        if (ghosts.some(ghost => ghost.isScared)) {
+            requestAnimationFrame(checkUnscare);
+        }
     }
 }
-
 
 export let timer = 0;
 let timerInterval;
@@ -97,33 +99,3 @@ export function stopTimer() {
     clearInterval(timerInterval);
     isTimerRunning = false;
 }
-
-// let lastTime = performance.now();
-// let frameCount = 0;
-// let fps = 0;
-
-// const fpsDisplay = document.createElement("div");
-// fpsDisplay.style.position = "fixed";
-// fpsDisplay.style.top = "10px";
-// fpsDisplay.style.left = "10px";
-// fpsDisplay.style.backgroundColor = "black";
-// fpsDisplay.style.color = "white";
-// fpsDisplay.style.padding = "5px";
-// fpsDisplay.style.fontSize = "14px";
-// document.body.appendChild(fpsDisplay);
-
-// function updateFPS() {
-//     const now = performance.now();
-//     frameCount++;
-
-//     if (now - lastTime >= 1000) {
-//         fps = frameCount;
-//         frameCount = 0;
-//         lastTime = now;
-//         fpsDisplay.innerText = `FPS: ${fps}`;
-//     }
-
-//     requestAnimationFrame(updateFPS);
-// }
-
-// updateFPS();

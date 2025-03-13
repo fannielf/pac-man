@@ -162,8 +162,10 @@ export function resetPacman() {
     document.querySelectorAll('.pac-man').forEach(square => {
         square.classList.remove('pac-man');
         square.style.backgroundImage = '';
-    });    pacmanCurrentIndex = 490;
+    });    
+    pacmanCurrentIndex = 490;
     squares[pacmanCurrentIndex].classList.add('pac-man');
+    squares[pacmanCurrentIndex].style.backgroundImage = "url('images/pacman-right.png')"
     isMoving = false;
     currentDirection = null;
 }

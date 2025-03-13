@@ -44,7 +44,6 @@ export function gameOver() {
     gameIsOver = true
     stopAllAnimations();
     document.removeEventListener('keydown', startMoving);
-    document.removeEventListener("keydown", togglePause);
     stopTimer();
 
     squares.forEach(square => {
@@ -63,7 +62,6 @@ export function checkForWin() {
         gameIsOver = true;
         stopAllAnimations();
         document.removeEventListener('keydown', startMoving)
-        document.removeEventListener("keydown", togglePause);
         stopTimer();
 
         squares.forEach(square => {

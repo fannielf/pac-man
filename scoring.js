@@ -2,11 +2,13 @@ import { squares } from "./gameBoard.js";
 import { pacmanCurrentIndex } from "./pac-man.js";
 import { ghosts } from "./ghosts.js";
 import { checkForWin } from "./gameState.js";
+import { isPaused } from "./app.js";
 
 export let score = 0;
 let scareEndTime = 0; // Track when scare mode should end
 let points = 100;
 const scoreDisplay = document.getElementById('score');
+export let scareTimerId = null;
 
 // what happens when pac-man eats a pac-dot
 export function pacDotEaten() {
@@ -20,6 +22,10 @@ export function pacDotEaten() {
 
 // what happens when pac-man eats a power-pallet
 export function powerPelletEaten() {
+    if (isPaused) {
+        scareTimerId = requestAnimationFrame(checkUnscare);
+        return;
+    }
     if (squares[pacmanCurrentIndex].classList.contains('power-pellet')) {
         score += 10;
         scoreDisplay.innerHTML = score;
@@ -34,7 +40,8 @@ export function powerPelletEaten() {
         
         function checkUnscare(time) {
             if (time >= scareEndTime) {
-                unScareGhosts();
+                cancelAnimationFrame(scareTimerId);
+                unScareGhosts(); 
             } else {
                 if (scareEndTime - time <= 3000) {
                     ghosts.forEach(ghost => {
@@ -43,22 +50,17 @@ export function powerPelletEaten() {
                     }
                     });
             }
-                requestAnimationFrame(checkUnscare);
-            }
+            scareTimerId = requestAnimationFrame(checkUnscare);
         }
-        requestAnimationFrame(checkUnscare);
+        }
+        scareTimerId = requestAnimationFrame(checkUnscare);
         squares[pacmanCurrentIndex].classList.remove('power-pellet');
         checkForWin()
     }
 }
     function unScareGhosts() {
         ghosts.forEach(ghost => {
-    
             squares[ghost.currentIndex].classList.remove('scared-ghost', 'blinking-ghost');
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-    
-            delete squares[ghost.currentIndex].dataset.scared;
-
             ghost.isScared = false;
         });
     
