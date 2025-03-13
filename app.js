@@ -1,6 +1,7 @@
 import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
 import { gameIsOver } from './gameState.js';
 import { scareTimerId } from './scoring.js';
+import { ghosts } from './ghosts.js';
 
 export let isPaused = false;
 const targetFPS = 60;
@@ -27,13 +28,17 @@ document.addEventListener('keyup', function(e) {
     } else if (e.key === 'Enter' && endMenu.classList.contains('hidden') === false) {
         e.preventDefault(); 
         location.reload();
+    } else if (e.key === 'i' && !gameIsOver) { 
+            e.preventDefault();  
+            toggleInfoMenu();
     } else {
         if (!endMenu.classList.contains('hidden')) {
             // Game is over, do nothing (skip stopMoving)
             return;
         }
-        stopMoving();    }
-    });
+        stopMoving();    
+    }
+});
 
     document.addEventListener('keydown', startMoving);
 
@@ -51,6 +56,16 @@ document.addEventListener('keyup', function(e) {
     });
 
 })
+
+function toggleInfoMenu() {
+    const infoMenu = document.getElementById('info-menu');
+
+    if (!infoMenu.classList.contains('hidden')) {
+        infoMenu.classList.add('hidden');
+    } else {
+        infoMenu.classList.remove('hidden');
+    }
+}
 
 //pausing the game
 export function togglePause() {
