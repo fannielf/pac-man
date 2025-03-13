@@ -4,6 +4,8 @@ import { scareTimerId, checkUnscare } from './scoring.js';
 import { ghosts } from './ghosts.js';
 
 export let isPaused = false;
+export let pauseDuration = 0;
+let pauseStartTime = 0;
 const targetFPS = 60;
 export const frameTime = 800 / targetFPS;
     
@@ -74,7 +76,8 @@ export function togglePause() {
     if (isPaused) {
         stopTimer();
         pauseMenu.classList.remove('hidden');
-        cancelAnimationFrame(scareTimerId); 
+        cancelAnimationFrame(scareTimerId); // Stop scare timer
+        pauseStartTime = performance.now();
     } else {
         pauseMenu.classList.add('hidden');
         startTimer();
@@ -82,6 +85,7 @@ export function togglePause() {
             requestAnimationFrame(movePacmanSmoothly);
         }
         if (ghosts.some(ghost => ghost.isScared)) {
+            pauseDuration = performance.now() - pauseStartTime;
             requestAnimationFrame(checkUnscare);
         }
     }
