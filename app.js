@@ -58,10 +58,8 @@ document.addEventListener('keyup', function(e) {
 })
 
 function toggleInfoMenu() {
-    
     const infoMenu = document.getElementById('info-menu');
-    console.log(infoMenu); // Debugging line
-
+    
     if (!infoMenu.classList.contains('hidden')) {
         infoMenu.classList.add('hidden');
     } else {
