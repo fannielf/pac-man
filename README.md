@@ -29,7 +29,7 @@ You control Pac-man who moves through a maze, collecting dots while avoiding gho
 - **Movement**:
   - Pac-Man moves through the maze using arrow keys (up, down, left, right). The game supports smooth movement, where you can hold down a key to continue moving in the chosen direction.
   - Ghosts switch between escaping from Pac-man, moving randomly and chasing Pac-man, based on the game state. The ghost get faster each time Pac-man loses a life.
-    **Note**: All characters can move through the tunnel without any consequences.
+  - **Note**: All characters can move through the tunnel without any consequences.
 - **Timer**: A countdown clock runs throughout the game to track how long the game has been played.
 - **Score**: Each dot collected increases the score. Eating a ghost after collecting a power pellet gives bonus points.
 - **Lives**: Pac-Man starts with 3 lives. If Pac-Man collides with a ghost while not in a scared state, a life is lost. If Pac-man loses all 3 lives, game is over.
