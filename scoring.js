@@ -38,9 +38,11 @@ export function powerPelletEaten() {
             } else {
                 if (scareEndTime - time <= 3000) {
                     ghosts.forEach(ghost => {
+                        if (ghost.isScared) {
                         squares[ghost.currentIndex].classList.add('blinking-ghost');
+                    }
                     });
-                }
+            }
                 requestAnimationFrame(checkUnscare);
             }
         }
