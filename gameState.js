@@ -3,7 +3,6 @@ import { startMoving, stopAllAnimations, resetPacman } from './pac-man.js';
 import { score } from './scoring.js';
 import { endMenu, timer, stopTimer } from './app.js';
 import { resetGhosts } from './ghosts.js';
-import { togglePause } from './app.js';
 
 const endMessage = document.getElementById('end-message');
 const finalScore = document.getElementById('final-score');
@@ -49,7 +48,7 @@ export function gameOver() {
     squares.forEach(square => {
         square.classList.remove('pac-man', 'ghost', 'scared-ghost');
     });
-    endMessage.innerHTML = 'Game Over';
+    endMessage.innerHTML = 'GAME OVER';
     finalScore.innerHTML = score;
     const minutes = Math.floor(timer / 60);
     const seconds = timer % 60;
