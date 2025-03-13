@@ -1,4 +1,5 @@
 import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
+import { gameIsOver } from './gameState.js';
 
 export let isPaused = false;
 const targetFPS = 60;
@@ -53,7 +54,8 @@ playAgainButton.addEventListener('click', function() {
 })
 
 //pausing the game
-function togglePause() {
+export function togglePause() {
+    if (gameIsOver) return;
     isPaused = !isPaused;
     if (isPaused) {
         stopTimer();
