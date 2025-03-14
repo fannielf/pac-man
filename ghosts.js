@@ -126,7 +126,8 @@ function moveGhost(ghost) {
             return;
         }
         
-        if (scaredGhostEaten(ghost)) {
+        if (pacmanCurrentIndex === ghost.currentIndex && ghost.isScared) {
+            scaredGhostEaten(ghost)
             escapeLair(ghost);
             return;
         }

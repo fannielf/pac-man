@@ -1,13 +1,10 @@
 import { squares } from "./gameBoard.js";
 import { pacmanCurrentIndex } from "./pac-man.js";
 import { ghosts } from "./ghosts.js";
-import { checkForWin } from "./gameState.js";
-import { isPaused, pauseDuration } from "./app.js";
+import { gameOver } from "./gameState.js";
+import { isPaused, newScareEnd } from "./app.js";
 
 export let score = 0;
-export let scareTimerId = null;
-let scareEndTime = 0;
-let points = 100;
 const scoreDisplay = document.getElementById('score');
 
 // what happens when pac-man eats a pac-dot
@@ -16,27 +13,28 @@ export function pacDotEaten() {
         score++;
         scoreDisplay.innerHTML = score;
         squares[pacmanCurrentIndex].classList.remove('pac-dot');
-        checkForWin
+        gameOver();
     }
 }
+
+export let scareTimerId = null;
+export let scareEndTime = 0;
+let points = 100;
 
 // what happens when pac-man eats a power-pallet
 export function powerPelletEaten() {
     if (squares[pacmanCurrentIndex].classList.contains('power-pellet')) {
+        points = 100;
         score += 10;
         scoreDisplay.innerHTML = score;
         ghosts.forEach(ghost => {
-            if (!ghost.isScared) {
-
-                ghost.isScared = true;             
-            }
+            ghost.isScared = true;             
         });
         scareEndTime = performance.now() + 10000;
-        console.log(typeof scareEndTime, scareEndTime)
 
         scareTimerId = requestAnimationFrame(checkUnscare);
-        squares[pacmanCurrentIndex].classList.remove('power-pellet');
-        checkForWin()
+        squares[pacmanCurrentIndex].classList.remove('power-pellet');    
+        gameOver();
     }
 }
 
@@ -45,17 +43,20 @@ export function checkUnscare(time) {
         scareTimerId = requestAnimationFrame(checkUnscare);
         return
     }
-    if (time >= scareEndTime+pauseDuration) {
+    if (newScareEnd !== 0 && newScareEnd > scareEndTime) {
+        scareEndTime = newScareEnd;
+    }
+    if (time >= scareEndTime) {
         cancelAnimationFrame(scareTimerId);
         unScareGhosts(); 
     } else {
-        if ((scareEndTime+pauseDuration) - time <= 3000) {
+        if ((scareEndTime) - time <= 3000) {
             ghosts.forEach(ghost => {
                 if (ghost.isScared) {
                 squares[ghost.currentIndex].classList.add('blinking-ghost');
             }
             });
-    }
+        }
     scareTimerId = requestAnimationFrame(checkUnscare);
     }
 }
@@ -65,24 +66,17 @@ function unScareGhosts() {
         squares[ghost.currentIndex].classList.remove('scared-ghost', 'blinking-ghost');
         ghost.isScared = false;
     });
-
-    points = 100;
 }
 
 export function scaredGhostEaten(ghost) {
-    if (ghost.currentIndex === pacmanCurrentIndex  && ghost.isScared) {
-        squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost', 'blinking-ghost');
-            ghost.currentIndex = ghost.startIndex;
-            ghost.isScared = false;
-            ghost.wanderingTime = 0;
-            ghost.timeElapsed = 0;
-            ghost.exitDelay = 2;
-            points = points * 2;
-            score += points;
-            scoreDisplay.innerHTML = score;
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
-            checkForWin()
-        return true
-    }
-    return false;
+    squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost', 'blinking-ghost');
+    ghost.currentIndex = ghost.startIndex;
+    ghost.isScared = false;
+    ghost.wanderingTime = 0;
+    ghost.timeElapsed = 0;
+    ghost.exitDelay = 2;
+    points = points * 2;
+    score += points;
+    scoreDisplay.innerHTML = score;
+    squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
 }

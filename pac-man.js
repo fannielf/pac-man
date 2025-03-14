@@ -1,7 +1,7 @@
 import { squares, width } from './gameBoard.js';
 import { isPaused, frameTime } from './app.js';
 import { pacDotEaten, powerPelletEaten, scaredGhostEaten } from './scoring.js';
-import { checkForWin, loseLife } from './gameState.js';
+import { gameOver, loseLife } from './gameState.js';
 import { ghosts } from './ghosts.js';
 
 export let pacmanCurrentIndex = 490;
@@ -44,7 +44,7 @@ export function movePacman(data) {
     
     pacDotEaten();
     powerPelletEaten();
-    checkForWin();
+    gameOver();
 }
 
 // Helper to calculate the next index based on direction
