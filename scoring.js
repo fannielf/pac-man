@@ -1,6 +1,6 @@
 import { squares } from "./gameBoard.js";
 import { pacmanCurrentIndex } from "./pac-man.js";
-import { ghosts } from "./ghosts.js";
+import { ghosts, escapeLair } from "./ghosts.js";
 import { gameOver } from "./gameState.js";
 import { isPaused, newScareEnd } from "./app.js";
 
@@ -69,14 +69,18 @@ function unScareGhosts() {
 }
 
 export function scaredGhostEaten(ghost) {
-    squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost', 'blinking-ghost');
-    ghost.currentIndex = ghost.startIndex;
-    ghost.isScared = false;
-    ghost.wanderingTime = 0;
-    ghost.timeElapsed = 0;
-    ghost.exitDelay = 2;
-    points = points * 2;
-    score += points;
-    scoreDisplay.innerHTML = score;
-    squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+    if (pacmanCurrentIndex === ghost.currentIndex && ghost.isScared) {
+        squares[ghost.currentIndex].classList.remove(ghost.className, 'scared-ghost', 'ghost', 'blinking-ghost');
+        ghost.currentIndex = ghost.startIndex;
+        ghost.isScared = false;
+        ghost.wanderingTime = 0;
+        ghost.timeElapsed = 0;
+        ghost.exitDelay = 2;
+        points = points * 2;
+        score += points;
+        scoreDisplay.innerHTML = score;
+        squares[ghost.currentIndex].classList.add(ghost.className, 'ghost');
+        return true
+    }
+    return false
 }

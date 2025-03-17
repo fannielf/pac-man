@@ -4,7 +4,7 @@ import { scareTimerId, checkUnscare, scareEndTime } from './scoring.js';
 import { ghosts } from './ghosts.js';
 
 const targetFPS = 60;
-export const frameTime = 800 / targetFPS;
+export const frameTime = 1000 / targetFPS;
     
 const pauseMenu = document.getElementById('pause-menu');
 const resumeButton = document.getElementById('resume-button');

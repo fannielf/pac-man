@@ -10,7 +10,7 @@ squares[pacmanCurrentIndex].classList.add('pac-man');
 export let isMoving = false;
 let lastTimestamp = 0;
 let currentDirection = null;
-const speed = 0.4;
+const speed = 0.3;
 
 let animationFrameId; 
 
@@ -25,7 +25,6 @@ export function movePacman(data) {
     if (ghostAtNextSquare) {
        
         if (ghostAtNextSquare.isScared) {
-            console.log("Pacman hit a ghost!");
             scaredGhostEaten(ghostAtNextSquare);
         } else {
             loseLife();  // Pac-Man loses a life
@@ -44,7 +43,6 @@ export function movePacman(data) {
     
     pacDotEaten();
     powerPelletEaten();
-    gameOver();
 }
 
 // Helper to calculate the next index based on direction
@@ -136,7 +134,6 @@ export function startMoving(e) {
     if (isPaused) return; 
     
     currentDirection = e.key; 
-    updatePacmanDirection(currentDirection);
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp

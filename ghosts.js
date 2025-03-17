@@ -27,7 +27,7 @@ export const ghosts = [
     new Ghost('clyde', 406, 0.05, 3.5),
 ];
 
-const directions = [-1, 1, width, -width]; // left, right, up, down
+const directions = [-1, 1, width, -width]; // left, right, down, up
 
 // Initialize all ghosts and begin with escaping the ghost-lair
 ghosts.forEach(ghost => {
@@ -51,19 +51,19 @@ function getValidNeighbors(index) {
 
     if (index === 364) {
         if (!squares[391].classList.contains('ghost')) {
-            neighbors.push({ index: 391, direction: 1 });
+            neighbors.push({ index: 391, direction: -1 });
         }
     }
 
     if (index === 391) {
         if (!squares[364].classList.contains('ghost')) {
-            neighbors.push({ index: 364, direction: -1 });
+            neighbors.push({ index: 364, direction: 1 });
         }
     }
     return neighbors;
 }
 
-function escapeLair(ghost) {
+export function escapeLair(ghost) {
 
     function move(timestamp) {
         if (gameIsOver) return
@@ -72,15 +72,13 @@ function escapeLair(ghost) {
             ghost.timerID = requestAnimationFrame(move);
             return;
         }
-
         if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
         const deltaTime = timestamp - ghost.lastMoveTime;
-        const moveStep = (deltaTime * ghost.speed) / frameTime ;
+        const moveStep = (deltaTime / frameTime) * ghost.speed ;
 
         if (ghost.timeElapsed < ghost.exitDelay) {
             ghost.timeElapsed += deltaTime/1000;
             ghost.lastMoveTime = timestamp;
-
         } else  if (squares[ghost.currentIndex].classList.contains('ghost-lair')){
             if (moveStep >= 1) {
                 ghost.lastMoveTime = timestamp;
@@ -119,15 +117,13 @@ function moveGhost(ghost) {
         const deltaTime = timestamp - ghost.lastMoveTime;
         const moveStep = (deltaTime / frameTime) * ghost.speed;
         
-        
         // Check for ghost collision with Pac-Man
         if (pacmanCurrentIndex === ghost.currentIndex && !ghost.isScared) {
             loseLife();
             return;
         }
         
-        if (pacmanCurrentIndex === ghost.currentIndex && ghost.isScared) {
-            scaredGhostEaten(ghost)
+        if (scaredGhostEaten(ghost)) {
             escapeLair(ghost);
             return;
         }
@@ -206,11 +202,8 @@ function escapePacman(ghost, validMoves) {
         const distance = getDistance(move.index);
 
         // Check if the move brings the ghost farther from Pac-Man
-        // Additionally, penalize moves that go directly back to the last position
-        const isNotGoingBack = (move.direction !== -ghost.lastDirection);
-
         // Increase the weight of the move if it increases distance and doesn't go back
-        if (distance > maxDistance && isNotGoingBack) {
+        if (distance > maxDistance && (move.direction !== -ghost.lastDirection)) {
             bestMove = move;
             maxDistance = distance;
         }
@@ -218,9 +211,7 @@ function escapePacman(ghost, validMoves) {
 
     // Find the move that maximizes distance from Pac-Man
     if (!bestMove) {
-        bestMove = validMoves.reduce((bestMove, move) => {
-            return getDistance(move.index) > getDistance(bestMove.index) ? move : bestMove;
-        });
+        bestMove = validMoves[0]
     }
 
     return bestMove;
@@ -228,7 +219,7 @@ function escapePacman(ghost, validMoves) {
 
 // Random wandering around the game board
 function randomMove(ghostDirection, validNeighbors) {
-    if (Object.keys(validNeighbors).length > 1) { // if there are more than one option, remove the opposite direction
+    if (validNeighbors.length > 1) { // if there are more than one option, remove the opposite direction
         const oppositeDirection = -ghostDirection;
         validNeighbors = validNeighbors.filter(move => move.direction !== oppositeDirection);
     }
