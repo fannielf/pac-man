@@ -8,6 +8,7 @@ const endMenu = document.getElementById('end-menu');
 const endMessage = document.getElementById('end-message');
 const finalScore = document.getElementById('final-score');
 const finalTime = document.getElementById('final-time');
+const scoreMsg = document.getElementById('score-message');
 
 export let lives = 3;
 export let gameIsOver = false;
@@ -36,6 +37,13 @@ export function gameOver() {
         endMessage.innerHTML = 'GAME OVER';
     } else if (boardEmpty()) {
         endMessage.innerHTML = 'You have WON!!';
+        if (score <= 500) {
+            scoreMsg.innerHTML = "Try harder, poor score"
+        } else if (score > 500 && score < 1500) {
+            scoreMsg.innerHTML = "Not a place to brag, you can do better"
+        } else {
+            scoreMsg.innerHTML = "WOWOWOWOW, way to go"
+        }
     } else {
         return
     }
