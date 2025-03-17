@@ -148,6 +148,9 @@ h3, #timer, #lives {
     background-color: #45a049;
 }
 
+#score-message {
+    font-weight: bold;
+}
 
 header {
     background-image: url('images/title.png');
