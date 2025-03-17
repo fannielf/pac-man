@@ -75,7 +75,7 @@ function escapeLair(ghost) {
 
         if (!ghost.lastMoveTime) ghost.lastMoveTime = timestamp;
         const deltaTime = timestamp - ghost.lastMoveTime;
-        const moveStep = (deltaTime * ghost.speed) / frameTime ;
+        const moveStep = (deltaTime / frameTime) * ghost.speed;
 
         if (ghost.timeElapsed < ghost.exitDelay) {
             ghost.timeElapsed += deltaTime/1000;
