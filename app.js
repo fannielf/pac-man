@@ -1,15 +1,11 @@
-import { stopMoving, startMoving, movePacmanSmoothly, isMoving } from './pac-man.js';
+import { stopMoving, startMoving } from './pac-man.js';
 import { gameIsOver } from './gameState.js';
-import { scareTimerId, checkUnscare } from './scoring.js';
+import { scareTimerId, checkUnscare, scareEndTime } from './scoring.js';
 import { ghosts } from './ghosts.js';
 
-export let isPaused = false;
-export let pauseDuration = 0;
-let pauseStartTime = 0;
 const targetFPS = 60;
-export const frameTime = 800 / targetFPS;
+export const frameTime = 1000 / targetFPS;
     
-export const endMenu = document.getElementById('end-menu');
 const pauseMenu = document.getElementById('pause-menu');
 const resumeButton = document.getElementById('resume-button');
 const restartButton = document.getElementById('restart-button');
@@ -19,36 +15,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     startTimer()
     
-//creating the event listeners
-document.addEventListener('keyup', function(e) {
-    if (e.key === ' ') {
-        e.preventDefault(); // Prevent default action
-        togglePause();
-    } else if (e.key === 'r' && isPaused) {
-        e.preventDefault();
-        location.reload();
-    } else if (e.key === 'Enter' && endMenu.classList.contains('hidden') === false) {
-        e.preventDefault(); 
-        location.reload();
-    } else if (e.key === 'i' && !gameIsOver) { 
-            e.preventDefault();  
-            toggleInfoMenu();
-    } else {
-        if (!endMenu.classList.contains('hidden')) {
-            // Game is over, do nothing (skip stopMoving)
-            return;
+    //creating the event listeners
+    document.addEventListener('keyup', function(e) {
+        if (e.key === ' ') {
+            e.preventDefault(); // Prevent default action
+            togglePause();
+        } else if (e.key === 'r' && isPaused) {
+            e.preventDefault();
+            location.reload();
+        } else if (e.key === 'Enter' && gameIsOver) {
+            e.preventDefault(); 
+            location.reload();
+        } else if (e.key === 'i') { 
+                e.preventDefault();  
+                toggleInfoMenu();
+        } else {
+            if (gameIsOver) {
+                // Game is over, do nothing (skip stopMoving)
+                return;
+            }
+            stopMoving();    
         }
-        stopMoving();    
-    }
-});
+    });
 
     document.addEventListener('keydown', startMoving);
 
     resumeButton.addEventListener('click', function() {
-        if (isPaused) {
-            togglePause();
-        }
+        togglePause();
     });
+
     restartButton.addEventListener('click', function() {
         location.reload();
     });
@@ -69,6 +64,12 @@ function toggleInfoMenu() {
     }
 }
 
+export let isPaused = false;
+export let pauseDuration = 0;
+export let newScareEnd = 0;
+let pauseStartTime = 0;
+
+
 //pausing the game
 export function togglePause() {
    if (gameIsOver) return;
@@ -81,18 +82,17 @@ export function togglePause() {
     } else {
         pauseMenu.classList.add('hidden');
         startTimer();
-        if (isMoving) {
-            requestAnimationFrame(movePacmanSmoothly);
-        }
         if (ghosts.some(ghost => ghost.isScared)) {
             pauseDuration = performance.now() - pauseStartTime;
-            requestAnimationFrame(checkUnscare);
+            newScareEnd = scareEndTime + pauseDuration;
+            // requestAnimationFrame(checkUnscare);
+            checkUnscare()
         }
     }
 }
 
 export let timer = 0;
-let timerInterval;
+let timerInterval = 0;
 let isTimerRunning = false;
 
 export function startTimer() {
@@ -111,7 +111,7 @@ export function updateTimerDisplay() {
     const minutes = Math.floor(timer / 60);
     const seconds = timer % 60;
     document.getElementById('timer').textContent = `Time: ${minutes}m ${seconds}s`;
-    document.getElementById('final-time').textContent = `${minutes}m ${seconds}s`; 
+    //document.getElementById('final-time').textContent = `${minutes}m ${seconds}s`; 
 }
 
 export function stopTimer() {
