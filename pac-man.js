@@ -1,7 +1,7 @@
 import { squares, width } from './gameBoard.js';
 import { isPaused, frameTime } from './app.js';
 import { pacDotEaten, powerPelletEaten, scaredGhostEaten } from './scoring.js';
-import { gameOver, loseLife } from './gameState.js';
+import { loseLife } from './gameState.js';
 import { ghosts } from './ghosts.js';
 
 export let pacmanCurrentIndex = 490;
