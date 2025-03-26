@@ -130,21 +130,65 @@ export function movePacmanSmoothly(timestamp) {
 }
 
 
+let directions = [""];
+let right = false;
+let left = false;
+let up = false;
+let down = false;
+
 export function startMoving(e) {
-    if (isPaused) return; 
-    
-    currentDirection = e.key; 
+    if (isPaused) return;
+
+    // Update current direction to latest key pressed down
+    if (
+        (e.key == "ArrowLeft" && !left) ||
+        (e.key == "ArrowRight" && !right) ||
+        (e.key == "ArrowUp" && !up) ||
+        (e.key == "ArrowDown" && !down)
+    ) {
+        // Put latest direction to start of directions array
+        directions.unshift(e.key)
+        currentDirection = directions[0];
+    }    
+
+    if (e.key == "ArrowLeft") left = true;
+    if (e.key == "ArrowRight") right = true;
+    if (e.key == "ArrowUp") up = true;
+    if (e.key == "ArrowDown") down = true;    
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp
-    movePacmanSmoothly(performance.now());
+
+    //movePacmanSmoothly(performance.now());
+    // requestAnimationFrame runs callback with timestamp anyway
+    requestAnimationFrame(movePacmanSmoothly);
     return
 }
 
-export function stopMoving() {
-    
-    isMoving = false; 
-    cancelAnimationFrame(animationFrameId);
+export function stopMoving(e) {
+
+    // Remove lifted key form array of directions
+    if (
+        e.key == "ArrowLeft" ||
+        e.key == "ArrowRight" ||
+        e.key == "ArrowUp" ||
+        e.key == "ArrowDown"
+    ) {
+        // Find index and splice that element out
+        const keyIndex = directions.findIndex(ele => ele === e.key);
+        directions.splice(keyIndex, 1);
+        currentDirection = directions[0];
+    }
+
+    if (e.key == "ArrowLeft") left = false;
+    if (e.key == "ArrowRight") right = false;
+    if (e.key == "ArrowUp") up = false;
+    if (e.key == "ArrowDown") down = false;
+
+    if (!currentDirection || currentDirection.length == 0) {
+        isMoving = false;
+        cancelAnimationFrame(animationFrameId);
+    }
 }
 
 export function stopAllAnimations() {

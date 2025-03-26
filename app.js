@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Game is over, do nothing (skip stopMoving)
                 return;
             }
-            stopMoving();    
+            stopMoving(e);    
         }
     });
 
