@@ -84,3 +84,9 @@ In Pac-Man, your score increases as you collect dots, eat power pellets, and def
 - **Ghost Personalities**: Each ghost could have its own behavior pattern, adding complexity to the AI (such as Blinky chasing Pac-Man, Pinky trying to ambush, etc.).
 - **Level Progression**: Add multiple levels with increasing difficulty by modifying the maze or increasing ghost speed.
 - **Smooth Movement**: Improve the movement so that ghosts move smoothly across the screen (without snapping tile to tile). Improve Pac-man's stopping and turning to be more responsive.
+
+## Acknowledgments
+
+Huge thanks for:
+
+- [@MarkusYPA](https://github.com/MarkusYPA) for improving pac-man controls (26-03-2025).
