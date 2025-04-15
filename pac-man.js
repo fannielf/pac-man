@@ -154,7 +154,9 @@ export function startMoving(e) {
     if (e.key == "ArrowLeft") left = true;
     if (e.key == "ArrowRight") right = true;
     if (e.key == "ArrowUp") up = true;
-    if (e.key == "ArrowDown") down = true;    
+    if (e.key == "ArrowDown") down = true;  
+    
+    if (!isMoving) {
 
     isMoving = true;
     lastTimestamp = 0; // Reset timestamp
@@ -162,7 +164,7 @@ export function startMoving(e) {
     //movePacmanSmoothly(performance.now());
     // requestAnimationFrame runs callback with timestamp anyway
     requestAnimationFrame(movePacmanSmoothly);
-    return
+    }
 }
 
 export function stopMoving(e) {
